@@ -7,4 +7,4 @@
   docker-compose up -d
 
 . to get into a running container
-  docker exec -u 0 -it <container ID> bash
+  docker exec -u leipan -it <container ID> bash
