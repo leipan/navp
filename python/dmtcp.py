@@ -106,7 +106,6 @@ def restore(sessionId = 0):
     session = sessionList[sessionId - 1]
     ### print ('session: ', session)
     print ('session[1]: ', os.path.realpath(session[1]))
-    print ('dmtcp_nocheckpoint: ', os.path.realpath('dmtcp_nocheckpoint'))
 
     # in order to run the shell script under the current dir using os.execlp()
     # the current dir '.' must be included in PATH (set in ~/.bashrc)
