@@ -21,7 +21,12 @@ RUN yum -y update && yum -y --setopt=tsflags=nodocs install    \
 
 RUN set -ex \
     && useradd -ms /bin/bash leipan             \
-    && echo "export PATH=$PATH:/home/leipan/local/dmtcp_installation/bin" >> /home/leipan/.bashrc
+    && echo "export PATH=$PATH:/home/leipan/local/dmtcp_installation/bin" >> /home/leipan/.bashrc \
+    && echo "alias ll='ls -alF'" >> /home/leipan/.bashrc \
+    && echo "alias rm='rm -i'"   >> /home/leipan/.bashrc \
+    && echo "alias mv='mv -i'"   >> /home/leipan/.bashrc \
+    && echo "alias cp='cp -i'"   >> /home/leipan/.bashrc \
+    && echo "alias h='history'"  >> /home/leipan/.bashrc
 
 USER leipan
 RUN mkdir -p /home/leipan/dmtcp
