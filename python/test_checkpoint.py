@@ -1,0 +1,19 @@
+#!/usr/bin/env python
+
+import dmtcp
+
+x = 1
+print ('before checkpoint() 1: ', x)
+dmtcp.checkpoint()
+print ('after checkpoint() 1: ', x)
+
+x = 2
+print ('before checkpoint() 2: ', x)
+dmtcp.checkpoint()
+print ('after checkpoint() 2: ', x)
+
+x = 3
+print ('before checkpoint() 3: ', x)
+dmtcp.checkpoint()
+print ('after checkpoint() 3: ', x)
+
