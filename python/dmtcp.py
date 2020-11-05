@@ -109,7 +109,13 @@ def restore(sessionId = 0):
 
     # in order to run the shell script under the current dir using os.execlp()
     # the current dir '.' must be included in PATH (set in ~/.bashrc)
-    os.execlp('/home/leipan/local/dmtcp_installation/bin/dmtcp_nocheckpoint', 'sh', os.path.realpath(session[1]))
+
+    # the higgs/weather intallation location
+    ### os.execlp('/home/leipan/local/dmtcp_installation/bin/dmtcp_nocheckpoint', 'sh', os.path.realpath(session[1]))
+
+    # the pleiades installation location
+    os.execlp('/home1/lpan/local/dmtcp3_0/bin/dmtcp_nocheckpoint', 'sh', os.path.realpath(session[1]))
+
     # or, we can explicitly prepend the current dir 
     ### current_dir = os.getcwd()
     ### os.execlp('/home/leipan/local/dmtcp_installation/bin/dmtcp_nocheckpoint', 'sh', os.path.join(current_dir, session[1]))
