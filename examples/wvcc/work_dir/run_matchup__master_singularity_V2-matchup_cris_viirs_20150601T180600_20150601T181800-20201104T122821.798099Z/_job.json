@@ -1,0 +1,319 @@
+{
+  "command": {
+    "arguments": [
+      "20150601T201500",
+      "20150601T205500"
+    ],
+    "env": [],
+    "options": [],
+    "path": "/home/ops/matchup_pge/run_matchup.sh"
+  },
+  "container_image_id": "singularity",
+  "container_image_name": "container-leipan_matchup_pge:master_singularity",
+  "container_image_url": "s3://s3-us-west-2.amazonaws.com/wvcc-matchup-code/container-leipan_matchup_pge_master-2020-09-15-11fefa3882d6.simg.tar.gz",
+  "container_mappings": {
+    "/home1/lpan/.aws": [
+      "/home/ops/.aws",
+      "ro"
+    ],
+    "/home1/lpan/.netrc": [
+      "/home/ops/.netrc"
+    ],
+    "/home1/lpan/verdi/etc/wvcc_config/datasets.json": "datasets.json",
+    "/home1/lpan/verdi/etc/wvcc_settings.conf": "/home/ops/wvcc/conf/settings.conf",
+    "/home1/lpan/verdi/ops/hysds/wvcc_celeryconfig.py": "wvcc_celeryconfig.py"
+  },
+  "context": {
+    "_command": "/home/ops/matchup_pge/run_matchup.sh '20150601T201500' '20150601T205500'",
+    "_disk_usage": "5GB",
+    "_prov": {
+      "wasGeneratedBy": "task_id:b9f34e07-9ec5-43ed-bf2d-67e2a3661f82"
+    },
+    "container_image_id": "singularity",
+    "container_image_name": "container-leipan_matchup_pge:master_singularity",
+    "container_image_url": "s3://s3-us-west-2.amazonaws.com/wvcc-matchup-code/container-leipan_matchup_pge_master-2020-09-15-11fefa3882d6.simg.tar.gz",
+    "container_mappings": {
+      "/home1/lpan/.aws": [
+        "/home/ops/.aws",
+        "ro"
+      ],
+      "/home1/lpan/.netrc": [
+        "/home/ops/.netrc"
+      ],
+      "/home1/lpan/verdi/etc/wvcc_settings.conf": "/home/ops/wvcc/conf/settings.conf"
+    },
+    "container_specification": {
+      "digest": "sha256:794fcb0f163b50c422628b371a76470c575546766da62cb8d70b88f1bf8c109a",
+      "id": "container-leipan_matchup_pge:master_singularity",
+      "url": "s3://s3-us-west-2.amazonaws.com/wvcc-matchup-code/container-leipan_matchup_pge_master-2020-09-15-11fefa3882d6.simg.tar.gz",
+      "version": "master_singularity_V2"
+    },
+    "dataset_tag": "CrIS_VIIRS_Matchup",
+    "end_time": "20150601T205500",
+    "input_metadata": {
+      "context": {},
+      "localize_urls": [
+        "http://wvcc-matchup-data.s3-website-us-west-2.amazonaws.com/datasets/CRIS/v1.0/2015/06/01/SNDR.SNPP.CRIS.20150601T1812.m06.g183.L1B_NSR.std.v02_05.G.180904194726/SNDR.SNPP.CRIS.20150601T1812.m06.g183.L1B_NSR.std.v02_05.G.180904194726.nc",
+        "http://wvcc-matchup-data.s3-website-us-west-2.amazonaws.com/datasets/VNP03MOD/v1.0/4906/None/VNP03MOD.A2015152.1806.001.2017261064906/VNP03MOD.A2015152.1806.001.2017261064906.nc",
+        "http://wvcc-matchup-data.s3-website-us-west-2.amazonaws.com/datasets/VNP03MOD/v1.0/4832/None/VNP03MOD.A2015152.1812.001.2017261064832/VNP03MOD.A2015152.1812.001.2017261064832.nc"
+      ]
+    },
+    "job_priority": 0,
+    "job_specification": {
+      "command": "/home/ops/matchup_pge/run_matchup.sh",
+      "container": "container-leipan_matchup_pge:master_singularity",
+      "disk_usage": "5GB",
+      "id": "job-run_matchup:master",
+      "imported_worker_files": {
+        "/home1/lpan/.aws": [
+          "/home/ops/.aws",
+          "ro"
+        ],
+        "/home1/lpan/.netrc": [
+          "/home/ops/.netrc"
+        ],
+        "/home1/lpan/verdi/etc/wvcc_settings.conf": "/home/ops/wvcc/conf/settings.conf"
+      },
+      "job-version": "master",
+      "params": [
+        {
+          "destination": "context",
+          "name": "dataset_tag",
+          "value": "CrIS_VIIRS_Matchup"
+        },
+        {
+          "destination": "context",
+          "name": "input_metadata",
+          "value": {
+            "context": {},
+            "localize_urls": [
+              "http://wvcc-matchup-data.s3-website-us-west-2.amazonaws.com/datasets/CRIS/v1.0/2015/06/01/SNDR.SNPP.CRIS.20150601T1812.m06.g183.L1B_NSR.std.v02_05.G.180904194726/SNDR.SNPP.CRIS.20150601T1812.m06.g183.L1B_NSR.std.v02_05.G.180904194726.nc",
+              "http://wvcc-matchup-data.s3-website-us-west-2.amazonaws.com/datasets/VNP03MOD/v1.0/4906/None/VNP03MOD.A2015152.1806.001.2017261064906/VNP03MOD.A2015152.1806.001.2017261064906.nc",
+              "http://wvcc-matchup-data.s3-website-us-west-2.amazonaws.com/datasets/VNP03MOD/v1.0/4832/None/VNP03MOD.A2015152.1812.001.2017261064832/VNP03MOD.A2015152.1812.001.2017261064832.nc"
+            ]
+          }
+        },
+        {
+          "destination": "localize",
+          "name": "localize_products",
+          "value": [
+            "http://wvcc-matchup-data.s3-website-us-west-2.amazonaws.com/datasets/CRIS/v1.0/2015/06/01/SNDR.SNPP.CRIS.20150601T1812.m06.g183.L1B_NSR.std.v02_05.G.180904194726/SNDR.SNPP.CRIS.20150601T1812.m06.g183.L1B_NSR.std.v02_05.G.180904194726.nc",
+            "http://wvcc-matchup-data.s3-website-us-west-2.amazonaws.com/datasets/VNP03MOD/v1.0/4906/None/VNP03MOD.A2015152.1806.001.2017261064906/VNP03MOD.A2015152.1806.001.2017261064906.nc",
+            "http://wvcc-matchup-data.s3-website-us-west-2.amazonaws.com/datasets/VNP03MOD/v1.0/4832/None/VNP03MOD.A2015152.1812.001.2017261064832/VNP03MOD.A2015152.1812.001.2017261064832.nc"
+          ]
+        },
+        {
+          "destination": "positional",
+          "name": "start_time",
+          "value": "20150601T201500"
+        },
+        {
+          "destination": "positional",
+          "name": "end_time",
+          "value": "20150601T205500"
+        }
+      ],
+      "recommended-queues": [
+        "pleiades_job_worker-small"
+      ],
+      "resource": "jobspec",
+      "soft_time_limit": 10000,
+      "time_limit": 10000
+    },
+    "localize_urls": [
+      {
+        "url": "http://wvcc-matchup-data.s3-website-us-west-2.amazonaws.com/datasets/CRIS/v1.0/2015/06/01/SNDR.SNPP.CRIS.20150601T1812.m06.g183.L1B_NSR.std.v02_05.G.180904194726/SNDR.SNPP.CRIS.20150601T1812.m06.g183.L1B_NSR.std.v02_05.G.180904194726.nc"
+      },
+      {
+        "url": "http://wvcc-matchup-data.s3-website-us-west-2.amazonaws.com/datasets/VNP03MOD/v1.0/4906/None/VNP03MOD.A2015152.1806.001.2017261064906/VNP03MOD.A2015152.1806.001.2017261064906.nc"
+      },
+      {
+        "url": "http://wvcc-matchup-data.s3-website-us-west-2.amazonaws.com/datasets/VNP03MOD/v1.0/4832/None/VNP03MOD.A2015152.1812.001.2017261064832/VNP03MOD.A2015152.1812.001.2017261064832.nc"
+      }
+    ],
+    "start_time": "20150601T201500",
+    "tag": "run 2370 matchups"
+  },
+  "delivery_info": {
+    "exchange": "",
+    "priority": 0,
+    "redelivered": false,
+    "routing_key": "pleiades_job_worker-small"
+  },
+  "job_id": "run_matchup__master_singularity_V2-matchup_cris_viirs_20150601T180600_20150601T181800-20201104T122821.798099Z",
+  "job_info": {
+    "cmd_duration": 87.100229,
+    "cmd_end": "2020-11-04T12:42:46.158419Z",
+    "cmd_start": "2020-11-04T12:41:19.058190Z",
+    "context_file": "/nobackupp12/lpan/wvcc/worker/2020/11/04/20201104T044007-pleiades_worker.1666/work/jobs/2020/11/04/12/40/run_matchup__master_singularity_V2-matchup_cris_viirs_20150601T180600_20150601T181800-20201104T122821.798099Z/_context.json",
+    "datasets_cfg_file": "/home1/lpan/verdi/etc/wvcc_config/datasets.json",
+    "dedup": false,
+    "execute_node": "hfe1.nas.nasa.gov",
+    "facts": {
+      "hysds_execute_node": "hfe1.nas.nasa.gov",
+      "hysds_public_ip": "10.150.25.237"
+    },
+    "id": "run_matchup__master_singularity_V2-matchup_cris_viirs_20150601T180600_20150601T181800-20201104T122821.798099Z",
+    "job_dir": "/nobackupp12/lpan/wvcc/worker/2020/11/04/20201104T044007-pleiades_worker.1666/work/jobs/2020/11/04/12/40/run_matchup__master_singularity_V2-matchup_cris_viirs_20150601T180600_20150601T181800-20201104T122821.798099Z",
+    "job_payload": {
+      "job_type": "job:job-run_matchup:master",
+      "payload_task_id": "62ca32bc-29ed-46ea-9072-300e68626be0"
+    },
+    "job_queue": "pleiades_job_worker-small",
+    "job_url": "http://10.150.25.237:8085/jobs/2020/11/04/12/40/run_matchup__master_singularity_V2-matchup_cris_viirs_20150601T180600_20150601T181800-20201104T122821.798099Z",
+    "metrics": {
+      "inputs_localized": [
+        {
+          "disk_usage": 4096,
+          "duration": 4.494355,
+          "path": "/nobackupp12/lpan/wvcc/worker/2020/11/04/20201104T044007-pleiades_worker.1666/work/jobs/2020/11/04/12/40/run_matchup__master_singularity_V2-matchup_cris_viirs_20150601T180600_20150601T181800-20201104T122821.798099Z/SNDR.SNPP.CRIS.20150601T1812.m06.g183.L1B_NSR.std.v02_05.G.180904194726.nc",
+          "time_end": "2020-11-04T12:41:15.283967Z",
+          "time_start": "2020-11-04T12:41:10.789612Z",
+          "transfer_rate": 911.3654795849461,
+          "url": "http://wvcc-matchup-data.s3-website-us-west-2.amazonaws.com/datasets/CRIS/v1.0/2015/06/01/SNDR.SNPP.CRIS.20150601T1812.m06.g183.L1B_NSR.std.v02_05.G.180904194726/SNDR.SNPP.CRIS.20150601T1812.m06.g183.L1B_NSR.std.v02_05.G.180904194726.nc"
+        },
+        {
+          "disk_usage": 4096,
+          "duration": 1.740123,
+          "path": "/nobackupp12/lpan/wvcc/worker/2020/11/04/20201104T044007-pleiades_worker.1666/work/jobs/2020/11/04/12/40/run_matchup__master_singularity_V2-matchup_cris_viirs_20150601T180600_20150601T181800-20201104T122821.798099Z/VNP03MOD.A2015152.1806.001.2017261064906.nc",
+          "time_end": "2020-11-04T12:41:17.035581Z",
+          "time_start": "2020-11-04T12:41:15.295458Z",
+          "transfer_rate": 2353.8565951947076,
+          "url": "http://wvcc-matchup-data.s3-website-us-west-2.amazonaws.com/datasets/VNP03MOD/v1.0/4906/None/VNP03MOD.A2015152.1806.001.2017261064906/VNP03MOD.A2015152.1806.001.2017261064906.nc"
+        },
+        {
+          "disk_usage": 4096,
+          "duration": 1.953445,
+          "path": "/nobackupp12/lpan/wvcc/worker/2020/11/04/20201104T044007-pleiades_worker.1666/work/jobs/2020/11/04/12/40/run_matchup__master_singularity_V2-matchup_cris_viirs_20150601T180600_20150601T181800-20201104T122821.798099Z/VNP03MOD.A2015152.1812.001.2017261064832.nc",
+          "time_end": "2020-11-04T12:41:18.999333Z",
+          "time_start": "2020-11-04T12:41:17.045888Z",
+          "transfer_rate": 2096.808458902093,
+          "url": "http://wvcc-matchup-data.s3-website-us-west-2.amazonaws.com/datasets/VNP03MOD/v1.0/4832/None/VNP03MOD.A2015152.1812.001.2017261064832/VNP03MOD.A2015152.1812.001.2017261064832.nc"
+        }
+      ],
+      "job_dir_size": 42072064,
+      "products_staged": []
+    },
+    "payload_hash": "e509300c2820903331f8f1af3b503ba7",
+    "pid": 24279,
+    "public_ip": "10.150.25.237",
+    "soft_time_limit": 10000,
+    "status": 0,
+    "stderr": "",
+    "stdout": "",
+    "time_limit": 10300,
+    "time_queued": "2020-11-04T12:28:21.798115Z",
+    "time_start": "2020-11-04T12:40:11.162510Z"
+  },
+  "localize_urls": [
+    {
+      "url": "http://wvcc-matchup-data.s3-website-us-west-2.amazonaws.com/datasets/CRIS/v1.0/2015/06/01/SNDR.SNPP.CRIS.20150601T1812.m06.g183.L1B_NSR.std.v02_05.G.180904194726/SNDR.SNPP.CRIS.20150601T1812.m06.g183.L1B_NSR.std.v02_05.G.180904194726.nc"
+    },
+    {
+      "url": "http://wvcc-matchup-data.s3-website-us-west-2.amazonaws.com/datasets/VNP03MOD/v1.0/4906/None/VNP03MOD.A2015152.1806.001.2017261064906/VNP03MOD.A2015152.1806.001.2017261064906.nc"
+    },
+    {
+      "url": "http://wvcc-matchup-data.s3-website-us-west-2.amazonaws.com/datasets/VNP03MOD/v1.0/4832/None/VNP03MOD.A2015152.1812.001.2017261064832/VNP03MOD.A2015152.1812.001.2017261064832.nc"
+    }
+  ],
+  "name": "run_matchup__master_singularity_V2-matchup_cris_viirs_20150601T180600_20150601T181800-20201104T122821.798099Z",
+  "params": {
+    "_command": "/home/ops/matchup_pge/run_matchup.sh '20150601T201500' '20150601T205500'",
+    "_disk_usage": "5GB",
+    "container_specification": {
+      "digest": "sha256:794fcb0f163b50c422628b371a76470c575546766da62cb8d70b88f1bf8c109a",
+      "id": "container-leipan_matchup_pge:master_singularity",
+      "url": "s3://s3-us-west-2.amazonaws.com/wvcc-matchup-code/container-leipan_matchup_pge_master-2020-09-15-11fefa3882d6.simg.tar.gz",
+      "version": "master_singularity_V2"
+    },
+    "dataset_tag": "CrIS_VIIRS_Matchup",
+    "end_time": "20150601T205500",
+    "input_metadata": {
+      "context": {},
+      "localize_urls": [
+        "http://wvcc-matchup-data.s3-website-us-west-2.amazonaws.com/datasets/CRIS/v1.0/2015/06/01/SNDR.SNPP.CRIS.20150601T1812.m06.g183.L1B_NSR.std.v02_05.G.180904194726/SNDR.SNPP.CRIS.20150601T1812.m06.g183.L1B_NSR.std.v02_05.G.180904194726.nc",
+        "http://wvcc-matchup-data.s3-website-us-west-2.amazonaws.com/datasets/VNP03MOD/v1.0/4906/None/VNP03MOD.A2015152.1806.001.2017261064906/VNP03MOD.A2015152.1806.001.2017261064906.nc",
+        "http://wvcc-matchup-data.s3-website-us-west-2.amazonaws.com/datasets/VNP03MOD/v1.0/4832/None/VNP03MOD.A2015152.1812.001.2017261064832/VNP03MOD.A2015152.1812.001.2017261064832.nc"
+      ]
+    },
+    "job_specification": {
+      "command": "/home/ops/matchup_pge/run_matchup.sh",
+      "container": "container-leipan_matchup_pge:master_singularity",
+      "disk_usage": "5GB",
+      "id": "job-run_matchup:master",
+      "imported_worker_files": {
+        "/home1/lpan/.aws": [
+          "/home/ops/.aws",
+          "ro"
+        ],
+        "/home1/lpan/.netrc": [
+          "/home/ops/.netrc"
+        ],
+        "/home1/lpan/verdi/etc/wvcc_settings.conf": "/home/ops/wvcc/conf/settings.conf"
+      },
+      "job-version": "master",
+      "params": [
+        {
+          "destination": "context",
+          "name": "dataset_tag",
+          "value": "CrIS_VIIRS_Matchup"
+        },
+        {
+          "destination": "context",
+          "name": "input_metadata",
+          "value": {
+            "context": {},
+            "localize_urls": [
+              "http://wvcc-matchup-data.s3-website-us-west-2.amazonaws.com/datasets/CRIS/v1.0/2015/06/01/SNDR.SNPP.CRIS.20150601T1812.m06.g183.L1B_NSR.std.v02_05.G.180904194726/SNDR.SNPP.CRIS.20150601T1812.m06.g183.L1B_NSR.std.v02_05.G.180904194726.nc",
+              "http://wvcc-matchup-data.s3-website-us-west-2.amazonaws.com/datasets/VNP03MOD/v1.0/4906/None/VNP03MOD.A2015152.1806.001.2017261064906/VNP03MOD.A2015152.1806.001.2017261064906.nc",
+              "http://wvcc-matchup-data.s3-website-us-west-2.amazonaws.com/datasets/VNP03MOD/v1.0/4832/None/VNP03MOD.A2015152.1812.001.2017261064832/VNP03MOD.A2015152.1812.001.2017261064832.nc"
+            ]
+          }
+        },
+        {
+          "destination": "localize",
+          "name": "localize_products",
+          "value": [
+            "http://wvcc-matchup-data.s3-website-us-west-2.amazonaws.com/datasets/CRIS/v1.0/2015/06/01/SNDR.SNPP.CRIS.20150601T1812.m06.g183.L1B_NSR.std.v02_05.G.180904194726/SNDR.SNPP.CRIS.20150601T1812.m06.g183.L1B_NSR.std.v02_05.G.180904194726.nc",
+            "http://wvcc-matchup-data.s3-website-us-west-2.amazonaws.com/datasets/VNP03MOD/v1.0/4906/None/VNP03MOD.A2015152.1806.001.2017261064906/VNP03MOD.A2015152.1806.001.2017261064906.nc",
+            "http://wvcc-matchup-data.s3-website-us-west-2.amazonaws.com/datasets/VNP03MOD/v1.0/4832/None/VNP03MOD.A2015152.1812.001.2017261064832/VNP03MOD.A2015152.1812.001.2017261064832.nc"
+          ]
+        },
+        {
+          "destination": "positional",
+          "name": "start_time",
+          "value": "20150601T201500"
+        },
+        {
+          "destination": "positional",
+          "name": "end_time",
+          "value": "20150601T205500"
+        }
+      ],
+      "recommended-queues": [
+        "pleiades_job_worker-small"
+      ],
+      "resource": "jobspec",
+      "soft_time_limit": 10000,
+      "time_limit": 10000
+    },
+    "localize_urls": [
+      {
+        "url": "http://wvcc-matchup-data.s3-website-us-west-2.amazonaws.com/datasets/CRIS/v1.0/2015/06/01/SNDR.SNPP.CRIS.20150601T1812.m06.g183.L1B_NSR.std.v02_05.G.180904194726/SNDR.SNPP.CRIS.20150601T1812.m06.g183.L1B_NSR.std.v02_05.G.180904194726.nc"
+      },
+      {
+        "url": "http://wvcc-matchup-data.s3-website-us-west-2.amazonaws.com/datasets/VNP03MOD/v1.0/4906/None/VNP03MOD.A2015152.1806.001.2017261064906/VNP03MOD.A2015152.1806.001.2017261064906.nc"
+      },
+      {
+        "url": "http://wvcc-matchup-data.s3-website-us-west-2.amazonaws.com/datasets/VNP03MOD/v1.0/4832/None/VNP03MOD.A2015152.1812.001.2017261064832/VNP03MOD.A2015152.1812.001.2017261064832.nc"
+      }
+    ],
+    "start_time": "20150601T201500",
+    "tag": "run 2370 matchups"
+  },
+  "priority": 0,
+  "tag": "run 2370 matchups",
+  "task_id": "b9f34e07-9ec5-43ed-bf2d-67e2a3661f82",
+  "type": "job-run_matchup:master",
+  "username": "ops"
+}
