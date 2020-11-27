@@ -140,16 +140,31 @@ def hello():
          Welcome to the NAVP Bridging Services.
          </h3>
 
-         <li> <b>(I1)</b> calling dmtcp_restart_script.sh
          <p>
-         <a href="{3}://{0}:{1}/svc/navp_hop?script=dmtcp_restart_script.sh">
-         {3}://{0}:{1}/svc/navp_hop?script=dmtcp_restart_script.sh
+         The NAVP Bridging Services are built based on NAVP and DMTCP.
+         </p>
+
+         <p>
+         <h4>NAVP Bridging Rest Examples:</h4>
+         </p>
+
+         <ul>
+         <li> <b>(S1)</b> ingest an executable
+         <p>
+         <a href="{3}://{0}:{1}/svc/ingest?exe=hop_example">
+         {3}://{0}:{1}/svc/ingest?script=hop_example
          </a>.
          </p>
          </li>
 
-
-
+         <li> <b>(S2)</b> hop by calling dmtcp_restart_script.sh
+         <p>
+         <a href="{3}://{0}:{1}/svc/hop?script=dmtcp_restart_script.sh">
+         {3}://{0}:{1}/svc/hop?script=dmtcp_restart_script.sh
+         </a>.
+         </p>
+         </li>
+         </ul>
 
          <br>
 
@@ -169,20 +184,68 @@ def hello():
 
 
 # ------------------------------------------------
-@app.route('/svc/navp', methods=["GET"])
+@app.route('/svc/ingest', methods=["GET"])
 @crossdomain(origin='*')
-def navp():
-    """Run navp"""
-    logger.info('****** navp() starts.')
-    executionStartTime = int(time.time())
+def ingest():
+  """Run ingest"""
+  logger.info('****** ingest() starts.')
+  executionStartTime = int(time.time())
 
-    dict1 = {'mesg':'navp up and running'}
+  executable = request.args.get('exe', '')
+  logger.info('executable: {0}'.format(executable))
 
-    executionEndTime = float(time.time())
-    print ('****** navp() elapsed time: ', executionEndTime - executionStartTime)
-    logger.info('****** navp() elapsed time: %s' % str(executionEndTime - executionStartTime))
+  DMTCP_ROOT = os.environ.get('DMTCP_ROOT')
+  DEMO_PORT = os.environ.get('DEMO_PORT')
 
-    return jsonify(dict1)
+  ### dmtcp = DMTCP_ROOT+'/bin/dmtcp_launch --quiet --coord-port '+DEMO_PORT+' --with-plugin libdmtcp_plugin-to-announce-events.so '
+  dmtcp = DMTCP_ROOT+'/bin/dmtcp_launch --quiet --coord-port '+DEMO_PORT+' '
+  command_line = dmtcp + executable
+
+  # run with dmtcp_launch
+  args = shlex.split(command_line)
+  print(args)
+  p = subprocess.Popen(args)
+  p.wait()
+
+  dict1 = {'mesg':'{} ingested'.format(executable)}
+
+  executionEndTime = float(time.time())
+  print ('****** ingest() elapsed time: ', executionEndTime - executionStartTime)
+  logger.info('****** ingest() elapsed time: %s' % str(executionEndTime - executionStartTime))
+
+  return jsonify(dict1)
+
+
+
+# ------------------------------------------------
+@app.route('/svc/hop', methods=["GET"])
+@crossdomain(origin='*')
+def hop():
+  """Run hop"""
+  logger.info('****** hop() starts.')
+  executionStartTime = int(time.time())
+
+  script = request.args.get('script', '')
+  logger.info('script: {0}'.format(script))
+  port = request.args.get('port', '')
+  logger.info('port: {0}'.format(port))
+
+  # run dmtcp_restart_script.sh
+  ### command_line = '/home/leipan/projects/dmtcp/git/navp/c/dmtcp_restart_script.sh --coord-host higgs.jpl.nasa.gov'
+  ### command_line = '/home/leipan/projects/dmtcp/git/navp/services/svc/dmtcp_restart_script.sh --coord-port 7788'
+  command_line = '/home/leipan/projects/dmtcp/git/navp/services/svc/dmtcp_restart_script.sh --coord-port ' + port
+  args = shlex.split(command_line)
+  print(args)
+  p = subprocess.Popen(args)
+  p.wait()
+
+  dict1 = {'mesg':'dmtcp_restart_script.sh called'}
+
+  executionEndTime = float(time.time())
+  print ('****** hop() elapsed time: ', executionEndTime - executionStartTime)
+  logger.info('****** hop() elapsed time: %s' % str(executionEndTime - executionStartTime))
+
+  return jsonify(dict1)
 
 
 
