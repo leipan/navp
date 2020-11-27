@@ -23,7 +23,7 @@ This example is sufficient for most applications, but more advanced
 hooks to DMTCP are also listed in applic.c .
 
 ---- added by Lei ----
-set in .bashrc
+env var setup in .bashrc on higgs
 # dmtcp env vars
 export DMTCP_ROOT="/home/leipan/projects/dmtcp/git/3.0/dmtcp-master"
 export DEMO_PORT="7781"
@@ -32,3 +32,8 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/leipan/projects/dmtcp/git/3.0/dmtc
 
 so we can run:
 ${DMTCP_ROOT}/bin/dmtcp_launch --quiet --coord-port ${DEMO_PORT} --with-plugin ${LIBNAME}.so ./applic
+
+. to ingest an executable
+  curl http://higgs.jpl.nasa.gov:8080/svc/ingest?exe=/home/leipan/projects/dmtcp/git/navp/c/hop_example
+
+
