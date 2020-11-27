@@ -4,7 +4,7 @@
 int main(void) {
 /* ls -al | grep '^d' */
   FILE *pp;
-  pp = popen("curl http://higgs.jpl.nasa.gov:8080 1>&2", "r");
+  pp = popen("curl http://higgs.jpl.nasa.gov:8080/svc/navp_hop 1>&2", "r");
   if (pp != NULL) {
     while (1) {
       char *line;
