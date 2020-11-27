@@ -43,7 +43,8 @@ UTIL = '/home/jpluser/m2020_crisp/imgreg_services/services/svc/svc/src/util/'
 HEADERS = {'Content-Type': 'application/json'}
 
 ### hostcfg = '/home/jpluser/m2020_crisp/imgreg_services/services/svc/host.cfg'
-hostcfg = '/home/leipan/projects/dmtcp/git/navp/services/svc/host.cfg'
+### hostcfg = '/home/leipan/projects/dmtcp/git/navp/services/svc/host.cfg'
+hostcfg = 'host.cfg'
 protocol, server_ip, port_num = get_host_port(hostcfg)
 vicar_ip = server_ip
 vicar_port = port_num
