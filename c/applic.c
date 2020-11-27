@@ -21,11 +21,30 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <sys/types.h>
 
 #include "dmtcp.h"
 
-int
-main()
+
+int get_process_pid() {
+  pid_t pid, ppid;
+  gid_t gid;
+
+  /* get the process id */
+  if ((pid = getpid()) < 0) {
+    perror("unable to get pid");
+    return -1;
+  } else {
+    printf("--- The process id is %d\n", pid);
+    return pid;
+  }
+
+  return -1;
+}
+
+
+
+int main()
 {
   int dmtcp_enabled = dmtcp_is_enabled();
 
@@ -61,6 +80,7 @@ main()
 
     printf("*** dmtcp_checkpoint: This program has now invoked a checkpoint.\n"
            "      It will resume its execution next.\n");
+    get_process_pid();
     printf("let navp daemon take care of restart now. exiting ...\n");
     return 0;
   } else if (retval == DMTCP_AFTER_RESTART) {
@@ -91,6 +111,7 @@ main()
       sleep(1);
     }
 
+    get_process_pid();
     printf("Again let navp daemon take care of restart. exiting ...\n");
     return 0;
   } else if (retval == DMTCP_AFTER_RESTART) {
