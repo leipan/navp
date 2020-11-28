@@ -63,7 +63,7 @@ int get_process_pid() {
 
 
 
-int hop(int original_generation, int port) {
+int hop(int original_generation, char *src_ip, char *dst_ip, int port) {
   int retval = dmtcp_checkpoint();
   if (retval == DMTCP_AFTER_CHECKPOINT) {
     // Wait long enough for checkpoint request to be written out.
@@ -79,7 +79,7 @@ int hop(int original_generation, int port) {
     // char *restart_cmd = "/home/leipan/projects/dmtcp/git/navp/c/dmtcp_restart_script.sh 1>&2";
     // char *restart_cmd = "curl http://higgs.jpl.nasa.gov:8080/svc/hop 1>&2 &";
     char restart_cmd[256];
-    sprintf(restart_cmd, "curl http://higgs.jpl.nasa.gov:8080/svc/hop?port=%d 1>&2", port);
+    sprintf(restart_cmd, "curl http://higgs.jpl.nasa.gov:8080/svc/hop?src_ip=%s&dst_ip=%s&port=%d 1>&2", src_ip, dst_ip, port);
     call_shell_command(restart_cmd);
 
     exit (0);
@@ -101,6 +101,8 @@ int hop(int original_generation, int port) {
 int main()
 {
   int dmtcp_enabled = dmtcp_is_enabled();
+  char *src_ip = "weather.jpl.nasa.gov";
+  char *dst_ip = "hipps.jpl.nasa.gov";
 
   if (!dmtcp_enabled) {
     printf("\n *** dmtcp_is_enabled: False. Run executable under dmtcp_launch.\n\n");
@@ -126,7 +128,7 @@ int main()
   printf("\n");
 
   port = 7788;
-  int r1 = hop(original_generation, port);
+  int r1 = hop(original_generation, src_ip, dst_ip, port);
 
   // print out in the 2nd loop
   for (i=l1; i<l2; i++) {
@@ -135,7 +137,7 @@ int main()
   printf("\n");
 
   port += 1;
-  int r2 = hop(original_generation, port);
+  int r2 = hop(original_generation, dst_ip, src_ip, port);
 
   // print out in the 2nd loop
   for (i=l2; i<l3; i++) {
