@@ -17,7 +17,7 @@ from werkzeug.utils import secure_filename
 ### from rq import Queue
 
 from svc import app
-from svc.src.util.utils import (get_host_port)
+from svc.src.util.utils import (get_host_port, parse_script)
 
 import logging
 import logging.config
@@ -198,6 +198,7 @@ def ingest():
   DMTCP_ROOT = os.environ.get('DMTCP_ROOT')
   DEMO_PORT = os.environ.get('DEMO_PORT')
 
+  # ingest always assumes that the executable resides locally
   ### dmtcp = DMTCP_ROOT+'/bin/dmtcp_launch --quiet --coord-port '+DEMO_PORT+' --with-plugin libdmtcp_plugin-to-announce-events.so '
   dmtcp = DMTCP_ROOT+'/bin/dmtcp_launch --quiet --coord-port '+DEMO_PORT+' '
   command_line = dmtcp + executable
@@ -226,15 +227,53 @@ def hop():
   logger.info('****** hop() starts.')
   executionStartTime = int(time.time())
 
-  script = request.args.get('script', '')
+  # src_ip is where the computation is from
+  src_ip = request.args.get('src_ip', '')
+  logger.info('src_ip: {0}'.format(src_ip))
+  # dst_ip is where the computation is migrating to
+  dst_ip = request.args.get('dst_ip', '')
+  logger.info('dst_ip: {0}'.format(dst_ip))
+  script = request.args.get('script', 'dmtcp_restart_script.sh')
   logger.info('script: {0}'.format(script))
-  port = request.args.get('port', '')
+  port = request.args.get('port', '6869')
   logger.info('port: {0}'.format(port))
 
-  # run dmtcp_restart_script.sh
-  ### command_line = '/home/leipan/projects/dmtcp/git/navp/c/dmtcp_restart_script.sh --coord-host higgs.jpl.nasa.gov'
-  ### command_line = '/home/leipan/projects/dmtcp/git/navp/services/svc/dmtcp_restart_script.sh --coord-port 7788'
-  command_line = '/home/leipan/projects/dmtcp/git/navp/services/svc/dmtcp_restart_script.sh --coord-port ' + port
+  if src_ip=='' or dst_ip=='':
+    dict1 = {'mesg':'need to call with both src_ip and dst_ip'}
+    executionEndTime = float(time.time())
+    print ('****** hop() elapsed time: ', executionEndTime - executionStartTime)
+    logger.info('****** hop() elapsed time: %s' % str(executionEndTime - executionStartTime))
+    return jsonify(dict1)
+
+  print('port: ', port)
+  print('src_ip: ', src_ip)
+  print('dst_ip: ', dst_ip)
+
+  # this service lives on the dst_ip
+  # first get dmtcp_restart_script.sh and the ckpt file from src_ip to dst_ip (local)
+  # location of files
+  prefix = '/home/leipan/projects/dmtcp/git/navp/services/svc/'
+  command_line = 'scp leipan@' + src_ip + ':' + prefix + script + ' .'
+  args = shlex.split(command_line)
+  print(args)
+  p = subprocess.Popen(args)
+  p.wait()
+
+  ckpt_file = parse_script(script)
+  logger.info('ckpt_file: {0}'.format(ckpt_file))
+
+  command_line = 'scp leipan@' + src_ip + ':' + ckpt_file + ' .'
+  args = shlex.split(command_line)
+  print(args)
+  p = subprocess.Popen(args)
+  p.wait()
+
+  # then run dmtcp_restart_script.sh on dst_ip
+  ### command_line = '/home/leipan/projects/dmtcp/git/navp/services/svc/dmtcp_restart_script.sh --coord-port ' + port
+  print('port: ', port)
+  print('dst_ip: ', dst_ip)
+  ### command_line = 'dmtcp_restart_script.sh --coord-port ' + port + ' --coord-host ' + dst_ip
+  command_line = 'dmtcp_restart_script.sh --coord-port ' + port + ' --coord-host localhost'
   args = shlex.split(command_line)
   print(args)
   p = subprocess.Popen(args)
