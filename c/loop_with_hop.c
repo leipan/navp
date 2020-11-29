@@ -104,11 +104,18 @@ int hop(int original_generation, char *src_ip, char *dst_ip, int port) {
   return 0;
 }
 
+
+// This program will hop between src_ip ('weather') and dst_ip ('higgs')
+// as it prints out numbers. To run it:
+// curl "http://weather.jpl.nasa.gov:8080/svc/ingest?exe=/home/leipan/projects/dmtcp/git/navp/c/loop_with_hop"
+// note: make sure the NAVP Bridging Services are running on both servers
+
 int main()
 {
   int dmtcp_enabled = dmtcp_is_enabled();
   char *src_ip = "weather.jpl.nasa.gov";
   char *dst_ip = "higgs.jpl.nasa.gov";
+  char *tmp;
 
   if (!dmtcp_enabled) {
     printf("\n *** dmtcp_is_enabled: False. Run executable under dmtcp_launch.\n\n");
@@ -121,45 +128,25 @@ int main()
   }
 
   int port;
-
-  int l1 = 5;
-  int l2 = 10;
-  int l3 = 15;
-  int l4 = 20;
-
-  // print out in the 1st loop
+  int r1;
   int i;
-  for (i=0; i<l1; i++) {
-    printf("%d ", i);
-  }
-  printf("\n");
+  int l1 = 25;
 
   port = 7788;
-  int r1 = hop(original_generation, src_ip, dst_ip, port);
-
-  // print out in the 2nd loop
-  for (i=l1; i<l2; i++) {
+  for (i=0; i<l1; i++) {
     printf("%d ", i);
+
+    if (i%5 == 0) {
+      printf("\n");
+      port += 1;
+      r1 = hop(original_generation, src_ip, dst_ip, port);
+
+      // swap the src and dst so we can hop back
+      tmp = src_ip;
+      src_ip = dst_ip;
+      dst_ip = tmp;
+    }
   }
-  printf("\n");
-
-  port += 1;
-  int r2 = hop(original_generation, dst_ip, src_ip, port);
-
-  // print out in the 2nd loop
-  for (i=l2; i<l3; i++) {
-    printf("%d ", i);
-  }
-  printf("\n");
-
-  port += 1;
-  int r3 = hop(original_generation, src_ip, dst_ip, port);
-
-  // print out in the 2nd loop
-  for (i=l3; i<l4; i++) {
-    printf("%d ", i);
-  }
-  printf("\n");
 
   return 0;
 }
