@@ -22,8 +22,8 @@ from svc.src.util.utils import (get_host_port, parse_script)
 import logging
 import logging.config
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO, filename='crisp_info.log')
-### logging.basicConfig(level=logging.DEBUG, filename='crisp_info.log')
+logging.basicConfig(level=logging.INFO, filename='navp_info.log')
+### logging.basicConfig(level=logging.DEBUG, filename='navp_info.log')
 
 from flask import current_app
 from functools import update_wrapper
