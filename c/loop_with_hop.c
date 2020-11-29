@@ -92,8 +92,8 @@ int hop(int original_generation, char *src_ip, char *dst_ip, int port) {
   } else if (retval == DMTCP_AFTER_RESTART) {
     printf("*** dmtcp_checkpoint: This program is now restarting.\n");
   } else if (retval == DMTCP_NOT_PRESENT) {
-    printf(" *** dmtcp_checkpoint: DMTCP is not running."
-           "  Skipping checkpoint.\n");
+    // printf(" *** dmtcp_checkpoint: DMTCP is not running."
+    //       "  Skipping checkpoint.\n");
   }
 
   // printf("\n*** Process done executing.  Successfully exiting.\n");
@@ -118,8 +118,7 @@ int main()
   char *tmp;
 
   if (!dmtcp_enabled) {
-    printf("\n *** dmtcp_is_enabled: False. Run executable under dmtcp_launch.\n\n");
-    exit(0);
+    printf("\n *** dmtcp_is_enabled: False. Run executable under dmtcp_launch if you want to hop among servers.\n\n");
   }
 
   int original_generation;
@@ -136,7 +135,7 @@ int main()
   for (i=0; i<l1; i++) {
     printf("%d ", i);
 
-    if (i%5 == 0) {
+    if ((i+1)%5 == 0) {
       printf("\n");
       port += 1;
       r1 = hop(original_generation, src_ip, dst_ip, port);
