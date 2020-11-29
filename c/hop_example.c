@@ -25,6 +25,8 @@
 
 #include "dmtcp.h"
 
+char *get_ip();
+
 
 int call_shell_command(char *shell_command) {
 /* ls -al | grep '^d' */
@@ -82,6 +84,9 @@ int hop(int original_generation, char *src_ip, char *dst_ip, int port) {
     sprintf(restart_cmd, "curl \"http://%s:8080/svc/hop?src_ip=%s&dst_ip=%s&port=%d\" 1>&2", dst_ip, src_ip, dst_ip, port);
     printf("--- restart_cmd: %s\n", restart_cmd);
     call_shell_command(restart_cmd);
+
+    char *my_ip = get_ip();
+    printf("--- my ip is %s\n", my_ip);
 
     exit (0);
   } else if (retval == DMTCP_AFTER_RESTART) {
