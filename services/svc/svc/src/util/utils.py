@@ -5,9 +5,32 @@ import sys
 import time
 import glob
 import logging
+import ctypes
+import re
 logger = logging.getLogger(__name__)
 
-import ctypes
+
+# find the ckpt file pointed at by dmtcp_restart_script.sh
+def parse_script(script):
+
+  file1 = open(script, 'r')
+  Lines = file1.readlines()
+
+  for line in Lines:
+    if 'given_ckpt_files=' in line:
+      ### print("line: {}".format(line.strip()))
+      var = re.findall(r'([\w]+)=', line.strip())
+      ### print("var: {}".format(var))
+      value = re.findall(r'=([\w\.\-\/\_\ \"]+)', line.strip())
+      ### print("value: {}".format(value))
+
+  file1.close()
+
+  value1 = value[0].replace('"', '')
+  value1 = value1.strip()
+  return value1
+
+
 
 def get_host_port(cfg_file):
 
@@ -36,18 +59,6 @@ def get_host_port(cfg_file):
       protocol = 'http'
 
     return protocol, myvars["HOSTNAME"], myvars["PORT"]
-
-"""
-      - PORT=:443
-      - NEO4J_ENDPOIT=100.64.49.54
-      - NEO4J_PORT=7687
-      - NEO4J_USERNAME=neo4j
-      - NEO4J_PASSWORD=m2020
-      - MARIADB_ENDPOIT=100.64.49.54
-      - MARIADB_PORT=3306
-      - MARIADB_USERNAME=root
-      - MARIADB_PASSWORD=m2020
-"""
 
 
 def usage_of_dir(dirname):
