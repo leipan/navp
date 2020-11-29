@@ -34,7 +34,10 @@ so we can run:
 ${DMTCP_ROOT}/bin/dmtcp_launch --quiet --coord-port ${DEMO_PORT} --with-plugin ${LIBNAME}.so ./applic
 
 . to ingest an executable
-  curl http://higgs.jpl.nasa.gov:8080/svc/ingest?exe=/home/leipan/projects/dmtcp/git/navp/c/hop_example
-  curl http://weather.jpl.nasa.gov:8080/svc/ingest?exe=/home/leipan/projects/dmtcp/git/navp/c/hop_example
+  curl "http://higgs.jpl.nasa.gov:8080/svc/ingest?exe=/home/leipan/projects/dmtcp/git/navp/c/hop_example"
+  curl "http://weather.jpl.nasa.gov:8080/svc/ingest?exe=/home/leipan/projects/dmtcp/git/navp/c/hop_example"
+
+  curl "http://weather.jpl.nasa.gov:8080/svc/ingest?exe=/home/leipan/projects/dmtcp/git/navp/c/loop_with_hop"
+
 
 
