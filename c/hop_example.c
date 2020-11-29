@@ -71,15 +71,16 @@ int hop(int original_generation, char *src_ip, char *dst_ip, int port) {
       sleep(1);
     }
 
-    printf("*** dmtcp_checkpoint: This program has now invoked a checkpoint.\n"
-           "      It will resume its execution next.\n");
-    get_process_pid();
-    printf("let navp daemon take care of restart now. exiting ...\n");
+    // printf("*** dmtcp_checkpoint: This program has now invoked a checkpoint.\n"
+    //        "      It will resume its execution next.\n");
+    // get_process_pid();
+    // printf("let navp daemon take care of restart now. exiting ...\n");
     // call the NAVP hop service
     // char *restart_cmd = "/home/leipan/projects/dmtcp/git/navp/c/dmtcp_restart_script.sh 1>&2";
     // char *restart_cmd = "curl http://higgs.jpl.nasa.gov:8080/svc/hop 1>&2 &";
     char restart_cmd[256];
-    sprintf(restart_cmd, "curl http://higgs.jpl.nasa.gov:8080/svc/hop?src_ip=%s&dst_ip=%s&port=%d 1>&2", src_ip, dst_ip, port);
+    sprintf(restart_cmd, "curl \"http://%s:8080/svc/hop?src_ip=%s&dst_ip=%s&port=%d\" 1>&2", dst_ip, src_ip, dst_ip, port);
+    printf("--- restart_cmd: %s\n", restart_cmd);
     call_shell_command(restart_cmd);
 
     exit (0);
@@ -90,7 +91,7 @@ int hop(int original_generation, char *src_ip, char *dst_ip, int port) {
            "  Skipping checkpoint.\n");
   }
 
-  printf("\n*** Process done executing.  Successfully exiting.\n");
+  // printf("\n*** Process done executing.  Successfully exiting.\n");
   if (retval == DMTCP_AFTER_CHECKPOINT) {
     printf("*** Execute ./dmtcp_restart_script.sh to restart.\n");
   }
@@ -102,7 +103,7 @@ int main()
 {
   int dmtcp_enabled = dmtcp_is_enabled();
   char *src_ip = "weather.jpl.nasa.gov";
-  char *dst_ip = "hipps.jpl.nasa.gov";
+  char *dst_ip = "higgs.jpl.nasa.gov";
 
   if (!dmtcp_enabled) {
     printf("\n *** dmtcp_is_enabled: False. Run executable under dmtcp_launch.\n\n");
@@ -119,6 +120,7 @@ int main()
   int l1 = 5;
   int l2 = 10;
   int l3 = 15;
+  int l4 = 20;
 
   // print out in the 1st loop
   int i;
@@ -141,6 +143,15 @@ int main()
 
   // print out in the 2nd loop
   for (i=l2; i<l3; i++) {
+    printf("%d ", i);
+  }
+  printf("\n");
+
+  port += 1;
+  int r3 = hop(original_generation, src_ip, dst_ip, port);
+
+  // print out in the 2nd loop
+  for (i=l3; i<l4; i++) {
     printf("%d ", i);
   }
   printf("\n");
