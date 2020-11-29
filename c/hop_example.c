@@ -85,8 +85,8 @@ int hop(int original_generation, char *src_ip, char *dst_ip, int port) {
     printf("--- restart_cmd: %s\n", restart_cmd);
     call_shell_command(restart_cmd);
 
-    char *my_ip = get_ip();
-    printf("--- my ip is %s\n", my_ip);
+    // char *my_ip = get_ip();
+    // printf("--- my ip is %s\n", my_ip);
 
     exit (0);
   } else if (retval == DMTCP_AFTER_RESTART) {
