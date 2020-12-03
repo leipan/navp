@@ -1,3 +1,25 @@
+. how to run the demo to show dmtcp checkpoint and restart:
+  . run 
+    python counter.py
+    to show a simple counting program
+  . run 
+    dmtcp_launch python counter.py
+    to show the same counting going
+  . in a separate window, run
+    dmtcp_command --checkpoint
+    when the counter prints out, say 8
+  . kill the original run, and run
+    sh dmtcp_restart_script.sh
+    to see counting resume from, say 9
+  . run
+    dmtcp_command --checkpoint
+    again and
+    sh dmtcp_restart_script.sh
+    again to see couting resume from another number 
+
+
+
+
 . restore() and checkpoint() can produc an infinite loop, like shown
   in test_restore.py:
 
