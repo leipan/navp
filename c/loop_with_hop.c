@@ -116,22 +116,17 @@ int main()
   char *src_ip = "weather.jpl.nasa.gov";
   char *dst_ip = "higgs.jpl.nasa.gov";
   char *tmp;
+  int port=7788, r1, i, l1 = 25;
+  int original_generation;
 
   if (!dmtcp_enabled) {
     printf("\n *** dmtcp_is_enabled: False. Run executable under dmtcp_launch if you want to hop among servers.\n\n");
   }
-
-  int original_generation;
-  if (dmtcp_enabled) {
+  else {
     original_generation = dmtcp_get_generation();
   }
 
-  int port;
-  int r1;
-  int i;
-  int l1 = 25;
 
-  port = 7788;
   for (i=0; i<l1; i++) {
     printf("%d ", i);
 
