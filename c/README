@@ -1,0 +1,43 @@
+This plugin causes the application applic.c to invoke DMTCP
+to checkpoint itself.
+
+In this example, the target application applic.c contains:
+  #include "dmtcp.h"
+and also:
+  dmtcp_checkpoint()
+
+Note that the Makefile compiles applic.c into ./applic, and that this same
+executable can be run with or without DMTCP:
+  dmtcp_launch ./applic # dmtcp_checkpoint() invokes DMTCP to checkpoint
+  ./applic  # dmtcp_checkpoint() returns the constant, DMTCP_NOT_PRESENT
+
+The plugin libplugin-to-announce-events.so is not needed here.
+It's used only to generate printing of events for the demonstration.
+
+Note the need to compile the target application with -fPIC, due to the use
+of dmtcp_checkpoint().  The '-fPIC' is needed so that the same binary
+can be used both with and without DMTCP.
+
+
+This example is sufficient for most applications, but more advanced
+hooks to DMTCP are also listed in applic.c .
+
+---- added by Lei ----
+env var setup in .bashrc on higgs
+# dmtcp env vars
+export DMTCP_ROOT="/home/leipan/projects/dmtcp/git/3.0/dmtcp-master"
+export DEMO_PORT="7781"
+export LIBNAME="libdmtcp_plugin-to-announce-events"
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/leipan/projects/dmtcp/git/3.0/dmtcp-master/test/plugin/applic-initiated-ckpt
+
+so we can run:
+${DMTCP_ROOT}/bin/dmtcp_launch --quiet --coord-port ${DEMO_PORT} --with-plugin ${LIBNAME}.so ./applic
+
+. to ingest an executable
+  curl "http://higgs.jpl.nasa.gov:8080/svc/ingest?exe=/home/leipan/projects/dmtcp/git/navp/c/hop_example"
+  curl "http://weather.jpl.nasa.gov:8080/svc/ingest?exe=/home/leipan/projects/dmtcp/git/navp/c/hop_example"
+
+  curl "http://weather.jpl.nasa.gov:8080/svc/ingest?exe=/home/leipan/projects/dmtcp/git/navp/c/loop_with_hop"
+
+
+
