@@ -152,16 +152,16 @@ def hello():
          <ul>
          <li> <b>(S1)</b> ingest an executable
          <p>
-         <a href="{3}://{0}:{1}/svc/ingest?exe=hop_example">
-         {3}://{0}:{1}/svc/ingest?script=hop_example
+         <a href="{0}:{1}/svc/ingest?exe=hop_example">
+         {0}:{1}/svc/ingest?script=hop_example
          </a>.
          </p>
          </li>
 
          <li> <b>(S2)</b> hop by calling dmtcp_restart_script.sh
          <p>
-         <a href="{3}://{0}:{1}/svc/hop?script=dmtcp_restart_script.sh">
-         {3}://{0}:{1}/svc/hop?script=dmtcp_restart_script.sh
+         <a href="{0}:{1}/svc/hop?script=dmtcp_restart_script.sh">
+         {0}:{1}/svc/hop?script=dmtcp_restart_script.sh
          </a>.
          </p>
          </li>
