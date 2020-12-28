@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import dmtcp
+import numpy as np
 
 print ('-------- 1 ----------')
 x = 1
