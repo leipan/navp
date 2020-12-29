@@ -45,7 +45,7 @@ def get_host_port(cfg_file):
       ### myvars["REDIS_USERNAME"] = os.environ['REDIS_USERNAME']
       ### myvars["REDIS_PASSWORD"] = os.environ['REDIS_PASSWORD']
 
-      protocol = 'https'
+      protocol = 'http'
     except KeyError:
       myfile =  open(cfg_file)
       for line in myfile:
