@@ -150,18 +150,18 @@ def hello():
          </p>
 
          <ul>
-         <li> <b>(S1)</b> ingest an executable
+         <li> <b>(S1)</b> ingest an executable (make sure services are on on both servers)
          <p>
-         <a href="{0}:{1}/svc/ingest?exe=hop_example">
-         {0}:{1}/svc/ingest?script=hop_example
+         <a href="{2}://{0}:{1}/svc/ingest?exe=/home/leipan/projects/dmtcp/git/navp/c/loop_with_hop">
+         {2}://{0}:{1}/svc/ingest?exe=/home/leipan/projects/dmtcp/git/navp/c/loop_with_hop
          </a>.
          </p>
          </li>
 
-         <li> <b>(S2)</b> hop by calling dmtcp_restart_script.sh
+         <li> <b>(S2)</b> hop by calling dmtcp_restart_script.sh (tbd: still need to call with both src_ip and dst_ip)
          <p>
-         <a href="{0}:{1}/svc/hop?script=dmtcp_restart_script.sh">
-         {0}:{1}/svc/hop?script=dmtcp_restart_script.sh
+         <a href="{2}://{0}:{1}/svc/hop?script=/home/leipan/projects/dmtcp/git/navp/services/svc/dmtcp_restart_script.sh">
+         {2}://{0}:{1}/svc/hop?script=/home/leipan/projects/dmtcp/git/navp/services/svc/dmtcp_restart_script.sh
          </a>.
          </p>
          </li>
