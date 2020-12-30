@@ -3,7 +3,7 @@
 # The contents of this file are inspired from the python script dmtcp_ctypes.py
 # originally supplied by Neal Becker.
 
-import os
+import os,sys
 import glob
 import subprocess
 from ctypes import *
@@ -65,7 +65,8 @@ def checkpointFilename():
 
 def checkpointFilesDir():
     if isEnabled:
-        return getCkptFilename().replace('.dmtcp', '_files')
+        ### return getCkptFilename().replace('.dmtcp', '_files')
+        return getCkptFilename().decode("utf-8").replace('.dmtcp', '_files')
     return ""
 
 def uniquePidStr():
@@ -112,13 +113,17 @@ def restore(sessionId = 0):
 
     # the higgs/weather intallation location
     ### os.execlp('/home/leipan/local/dmtcp_installation/bin/dmtcp_nocheckpoint', 'sh', os.path.realpath(session[1]))
-
     # the pleiades installation location
-    os.execlp('/home1/lpan/local/dmtcp3_0/bin/dmtcp_nocheckpoint', 'sh', os.path.realpath(session[1]))
+    ### os.execlp('/home1/lpan/local/dmtcp3_0/bin/dmtcp_nocheckpoint', 'sh', os.path.realpath(session[1]))
 
-    # or, we can explicitly prepend the current dir 
-    ### current_dir = os.getcwd()
-    ### os.execlp('/home/leipan/local/dmtcp_installation/bin/dmtcp_nocheckpoint', 'sh', os.path.join(current_dir, session[1]))
+    DMTCP_ROOT = os.getenv('DMTCP_ROOT')
+    ### print('DMTCP_ROOT: ', DMTCP_ROOT)
+    if DMTCP_ROOT != None:
+      cmd = os.path.join(DMTCP_ROOT, 'bin/dmtcp_nocheckpoint')
+      print('cmd: ', cmd)
+      os.execlp(os.path.join(DMTCP_ROOT, 'bin/dmtcp_nocheckpoint'), 'sh', os.path.realpath(session[1]))
+    else:
+      sys.exit('Please set env variable: DMTCP_ROOT')
 
 
 def createSessionList():
