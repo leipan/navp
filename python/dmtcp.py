@@ -60,7 +60,8 @@ def numRestarts():
 
 def checkpointFilename():
     if isEnabled:
-        return getCkptFilename()
+        ### return getCkptFilename()
+        return getCkptFilename().decode("utf-8")
     return ""
 
 def checkpointFilesDir():
