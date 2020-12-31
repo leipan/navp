@@ -259,16 +259,16 @@ def hop():
     ckpt_basename = os.path.basename(ckpt_filepath)
     prefix = ckpt_filepath.replace(ckpt_basename, '')
 
-  command_line = 'scp leipan@' + src_ip + ':' + prefix + script + ' .'
+  command_line = 'scp leipan@' + src_ip + ':' + prefix + script + ' ' + prefix + '/.'
   args = shlex.split(command_line)
   print(args)
   p = subprocess.Popen(args)
   p.wait()
 
-  ckpt_file = parse_script(script)
+  ckpt_file = parse_script(os.path.join(prefix, script))
   logger.info('ckpt_file: {0}'.format(ckpt_file))
 
-  command_line = 'scp leipan@' + src_ip + ':' + ckpt_file + ' .'
+  command_line = 'scp leipan@' + src_ip + ':' + ckpt_file + ' ' + prefix + '/.'
   args = shlex.split(command_line)
   print(args)
   p = subprocess.Popen(args)
