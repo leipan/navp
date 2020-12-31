@@ -5,9 +5,20 @@ import dmtcp
 
 x = 1
 print ('before checkpoint() 1: ', x)
+fdir = dmtcp.checkpointFilesDir()
+print ('fdir: ', fdir)
 dmtcp.checkpoint()
 print ('after checkpoint() 1: ', x)
 
+
+
+
+
+
+
+
+
+"""
 x = 2
 print ('before checkpoint() 2: ', x)
 dmtcp.checkpoint()
@@ -18,3 +29,4 @@ print ('before checkpoint() 3: ', x)
 dmtcp.checkpoint()
 print ('after checkpoint() 3: ', x)
 
+"""
