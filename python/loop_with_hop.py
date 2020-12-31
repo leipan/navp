@@ -12,10 +12,12 @@ def hop(src_ip, dst_ip, port):
   time.sleep(1)
   ### print("checkpoint done.")
 
+  fname = dmtcp.checkpointFilename()
+  print ('fname: ', fname)
 
   if dmtcp.isResume():
     restart_cmd = \
-      'curl "http://{0}:8080/svc/hop?src_ip={1}&dst_ip={2}&port={3}" 1>&2'.format(dst_ip, src_ip, dst_ip, port)
+      'curl "http://{0}:8080/svc/hop?src_ip={1}&dst_ip={2}&port={3}&ckpt={4}" 1>&2'.format(dst_ip, src_ip, dst_ip, port, fname)
     print('restart_cmd: ', restart_cmd)
 
     args = shlex.split(restart_cmd)
