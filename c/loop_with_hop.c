@@ -66,12 +66,19 @@ int get_process_pid() {
 
 
 int hop(int original_generation, char *src_ip, char *dst_ip, int port) {
+
+  const char *ckpt_filename;
+
   int retval = dmtcp_checkpoint();
   if (retval == DMTCP_AFTER_CHECKPOINT) {
     // Wait long enough for checkpoint request to be written out.
     while (dmtcp_get_generation() == original_generation) {
       sleep(1);
     }
+
+    printf("ckpt filename: \n");
+    ckpt_filename = dmtcp_get_ckpt_filename();
+    printf("%s\n", ckpt_filename);
 
     // printf("*** dmtcp_checkpoint: This program has now invoked a checkpoint.\n"
     //        "      It will resume its execution next.\n");
