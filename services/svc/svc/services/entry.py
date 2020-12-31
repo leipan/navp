@@ -237,6 +237,8 @@ def hop():
   logger.info('script: {0}'.format(script))
   port = request.args.get('port', '6869')
   logger.info('port: {0}'.format(port))
+  ckpt_filepath = request.args.get('ckpt', '')
+  logger.info('ckpt_filepath: {0}'.format(ckpt_filepath))
 
   if src_ip=='' or dst_ip=='':
     dict1 = {'mesg':'need to call with both src_ip and dst_ip'}
@@ -253,6 +255,10 @@ def hop():
   # first get dmtcp_restart_script.sh and the ckpt file from src_ip to dst_ip (local)
   # location of files
   prefix = '/home/leipan/projects/dmtcp/git/navp/services/svc/'
+  if ckpt_filepath != '':
+    ckpt_basename = os.path.basename(ckpt_filepath)
+    prefix = ckpt_filepath.replace(ckpt_basename, '')
+
   command_line = 'scp leipan@' + src_ip + ':' + prefix + script + ' .'
   args = shlex.split(command_line)
   print(args)
