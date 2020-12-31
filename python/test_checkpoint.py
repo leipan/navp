@@ -5,8 +5,12 @@ import dmtcp
 
 x = 1
 print ('before checkpoint() 1: ', x)
+
 fdir = dmtcp.checkpointFilesDir()
 print ('fdir: ', fdir)
+fname = dmtcp.checkpointFilename()
+print ('fname: ', fname)
+
 dmtcp.checkpoint()
 print ('after checkpoint() 1: ', x)
 
