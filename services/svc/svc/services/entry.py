@@ -254,14 +254,15 @@ def hop():
   # this service lives on the dst_ip
   # first get dmtcp_restart_script.sh and the ckpt file from src_ip to dst_ip (local)
   # location of files
-  prefix = '/home/leipan/projects/dmtcp/git/navp/services/svc/'
+  ### prefix = '/home/leipan/projects/dmtcp/git/navp/services/svc/'
+  prefix = ''
   if ckpt_filepath != '':
     ckpt_basename = os.path.basename(ckpt_filepath)
     prefix = ckpt_filepath.replace(ckpt_basename, '')
 
   command_line = 'scp leipan@' + src_ip + ':' + prefix + script + ' ' + prefix + '.'
   args = shlex.split(command_line)
-  print(args)
+  ### print(args)
   p = subprocess.Popen(args)
   p.wait()
 
@@ -269,6 +270,15 @@ def hop():
   logger.info('ckpt_file: {0}'.format(ckpt_file))
 
   command_line = 'scp leipan@' + src_ip + ':' + ckpt_file + ' ' + prefix + '.'
+  args = shlex.split(command_line)
+  ### print(args)
+  p = subprocess.Popen(args)
+  p.wait()
+
+  ckpt_files_dir = ckpt_file.replace('.dmtcp', '_files')
+  logger.info('ckpt_files_dir: {0}'.format(ckpt_files_dir))
+
+  command_line = 'scp -r leipan@' + src_ip + ':' + ckpt_files_dir + ' ' + prefix + '.'
   args = shlex.split(command_line)
   print(args)
   p = subprocess.Popen(args)
