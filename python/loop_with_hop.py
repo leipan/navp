@@ -3,45 +3,21 @@
 import dmtcp
 import time
 import sys
-import shlex, subprocess
-
-"""
-def hop(src_ip, dst_ip, port):
-
-  ### print("in hop.")
-  dmtcp.checkpoint()
-  time.sleep(1)
-  ### print("checkpoint done.")
-
-  fname = dmtcp.checkpointFilename()
-  print ('fname: ', fname)
-
-  if dmtcp.isResume():
-    restart_cmd = \
-      'curl "http://{0}:8080/svc/hop?src_ip={1}&dst_ip={2}&port={3}&ckpt={4}" '.format(dst_ip, src_ip, dst_ip, port, fname)
-    print('restart_cmd: ', restart_cmd)
-
-    args = shlex.split(restart_cmd)
-    print(args)
-    p = subprocess.Popen(args)
-    p.wait()
-
-    ### print("The process is resuming from a checkpoint.")
-    # after hop(), the process will restart on a new node
-    sys.exit(0)
-  else:
-    # restarting after hop() on a new node
-    ### print("The process is restarting from a previous checkpoint.")
-    pass
-  return
-"""
-
-
+import socket
 
 if __name__ == '__main__':
 
-  src_ip = "weather.jpl.nasa.gov"
-  dst_ip = "higgs.jpl.nasa.gov"
+  ip1 = "weather2.jpl.nasa.gov"
+  ip2 = "higgs.jpl.nasa.gov"
+
+  src_ip = socket.gethostname()
+  dst_ip = ip2
+  if dst_ip == src_ip:
+    dst_ip = ip1
+
+  print('src_ip: ', src_ip)
+  print('dst_ip: ', dst_ip)
+
   port = 7788
 
   l1 = 16
@@ -63,3 +39,6 @@ if __name__ == '__main__':
       dst_ip = tmp
 
     n += 1
+
+  print('')
+
