@@ -5,6 +5,7 @@ import time
 import sys
 import shlex, subprocess
 
+"""
 def hop(src_ip, dst_ip, port):
 
   ### print("in hop.")
@@ -33,6 +34,7 @@ def hop(src_ip, dst_ip, port):
     ### print("The process is restarting from a previous checkpoint.")
     pass
   return
+"""
 
 
 
@@ -53,7 +55,7 @@ if __name__ == '__main__':
       ### print("\n calling hop()")
       print("")
       port += 1
-      hop(src_ip, dst_ip, port)
+      dmtcp.hop(src_ip, dst_ip, port)
 
       ### swap the src and dst so we can hop back
       tmp = src_ip
