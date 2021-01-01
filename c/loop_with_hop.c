@@ -88,7 +88,7 @@ int hop(int original_generation, char *src_ip, char *dst_ip, int port) {
     // char *restart_cmd = "/home/leipan/projects/dmtcp/git/navp/c/dmtcp_restart_script.sh 1>&2";
     // char *restart_cmd = "curl http://higgs.jpl.nasa.gov:8080/svc/hop 1>&2 &";
     char restart_cmd[256];
-    sprintf(restart_cmd, "curl \"http://%s:8080/svc/hop?src_ip=%s&dst_ip=%s&port=%d\" 1>&2", dst_ip, src_ip, dst_ip, port);
+    sprintf(restart_cmd, "curl \"http://%s:8080/svc/hop?src_ip=%s&dst_ip=%s&ckpt=%s&port=%d\" 1>&2", dst_ip, src_ip, dst_ip, ckpt_filename, port);
     printf("--- restart_cmd: %s\n", restart_cmd);
     call_shell_command(restart_cmd);
 
