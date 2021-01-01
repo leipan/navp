@@ -139,16 +139,19 @@ def hop(src_ip, dst_ip, port):
 
   ### fname = dmtcp.checkpointFilename()
   fname = checkpointFilename()
-  print ('fname: ', fname)
+  """
+  if fname != '':
+    print ('fname: ', fname)
+  """
 
   ### if dmtcp.isResume():
   if isResume():
     restart_cmd = \
       'curl "http://{0}:8080/svc/hop?src_ip={1}&dst_ip={2}&port={3}&ckpt={4}" '.format(dst_ip, src_ip, dst_ip, port, fname)
-    print('restart_cmd: ', restart_cmd)
+    ### print('restart_cmd: ', restart_cmd)
 
     args = shlex.split(restart_cmd)
-    print(args)
+    ### print(args)
     p = subprocess.Popen(args)
     p.wait()
 
