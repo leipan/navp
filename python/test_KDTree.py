@@ -109,9 +109,7 @@ query_pts = np.array([[  787014.438,  -340616.906,  6313018.],
 
 kdtree = KDTree(data_pts_real)
 
-### sys.exit(0)
-
-# this line causes the process to hang when run with
+# this line sometimes causes the process to hang when run with
 # dmtcp_launch python test_KDTree.py
 dist, idx = kdtree.query(query_pts, sqr_dists=True)
 
