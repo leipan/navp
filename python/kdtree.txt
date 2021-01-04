@@ -1,0 +1,17 @@
+import numpy as np
+from pykdtree.kdtree import KDTree
+
+data_pts_real = np.array([[...]]) # details of data omitted
+query_pts = np.array([[...]])     # details of data omitted
+
+kdtree = KDTree(data_pts_real)
+
+# this line sometimes causes the process to hang when run with
+# dmtcp_launch python test_KDTree.py
+dist, idx = kdtree.query(query_pts, sqr_dists=True)
+
+print ('dist: ', dist)
+print ('idx: ', idx)
+
+
+
