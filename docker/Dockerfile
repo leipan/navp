@@ -13,15 +13,19 @@ RUN yum -y update && yum -y --setopt=tsflags=nodocs install    \
       git-core                                  \
       make                                      \
       vim                                       \
+      gdb                                       \
       python3-pip python3-dev                   \
       && yum clean all                          \
       && cd /usr/local/bin                      \
       && ln -s /usr/bin/python3 python          \
-      && pip3 install --upgrade pip
+      && pip3 install --upgrade pip             \
+      && pip3 install numpy                     \
+      && pip3 install pykdtree
 
 RUN set -ex \
     && useradd -ms /bin/bash leipan             \
     && echo "export PATH=$PATH:/home/leipan/local/dmtcp_installation/bin" >> /home/leipan/.bashrc \
+    && echo "export DMTCP_ROOT=/home/leipan/local/dmtcp_installation/" >> /home/leipan/.bashrc \
     && echo "alias ll='ls -alF'" >> /home/leipan/.bashrc \
     && echo "alias rm='rm -i'"   >> /home/leipan/.bashrc \
     && echo "alias mv='mv -i'"   >> /home/leipan/.bashrc \
@@ -41,4 +45,4 @@ RUN git clone https://leipan:e47e4b23ab852c2ba732260183b12033ad591018@github.com
 
 RUN ./configure --prefix=/home/leipan/local/dmtcp_installation && make -j 2 && make install
 
-ENTRYPOINT ["bash"]
+ENTRYPOINT ["/bin/bash"]
