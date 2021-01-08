@@ -12,7 +12,6 @@
 
 . to run dmtcp docker container
   docker run -ti <image>
-  docker-compose up -d
 
 . to get into a running container
   docker exec -u leipan -it <container ID> bash
