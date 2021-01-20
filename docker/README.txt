@@ -1,17 +1,27 @@
-. kill container
-  docker ps
-  docker kill 3a0eb412eb5f
-
-. remove image
+. to remove an image
   docker images
-  docker rmi --force a186f84c3981
+  docker rmi --force a186f84c3981 (image ID)
 
-. to build container
+. to build an image
+  cd navp/docker (where Dockerfile is)
   docker build --rm -t dmtcp/dmtcp:latest .
-  (--rm would allow reuse of the useful layers from the old one)
 
 . to run dmtcp docker container
-  docker run -ti <image>
+  docker run --cap-add=SYS_PTRACE --security-opt seccomp=unconfined -ti dmtcp/dmtcp
 
-. to get into a running container
-  docker exec -u leipan -it <container ID> bash
+. to run the scripts after getting into the container
+  cd ~/navp/python/
+  gdb --args python test_numpy.py
+  (gdb) run
+
+  or,
+  gdb --args dmtcp_launch python test_numpy.py
+  (gdb) run
+  ^C
+  (gdb) thread apply all bt
+
+  or,
+  gdb --args dmtcp_launch python test_KDTree.py
+  (gdb) run
+  ^C
+  (gdb) thread apply all bt
