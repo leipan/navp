@@ -1,3 +1,6 @@
+. to clone from github
+  git clone https://github.com/leipan/navp.git
+
 . to remove an image
   docker images
   docker rmi --force a186f84c3981 (image ID)
