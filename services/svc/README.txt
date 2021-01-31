@@ -23,11 +23,12 @@
   export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/leipan/projects/dmtcp/git/3.0/dmtcp-master/test/plugin/applic-initiated-ckpt
 
   . to build
-    on weather
+    on weather (cause the src ip is hardcoded to weather)
     cd /home/leipan/projects/dmtcp/git/navp/c
     make -f make_loop_hop
 
   . to run
+    on weather (cause the src ip is hardcoded to weather)
     cd /home/leipan/projects/dmtcp/git/navp/services/svc
     dmtcp_launch /home/leipan/projects/dmtcp/git/navp/c/loop_with_hop
 
