@@ -22,6 +22,14 @@
   export LIBNAME="libdmtcp_plugin-to-announce-events"
   export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/leipan/projects/dmtcp/git/3.0/dmtcp-master/test/plugin/applic-initiated-ckpt
 
+  . to build
+    on weather
+    cd /home/leipan/projects/dmtcp/git/navp/c
+    make -f make_loop_hop
+
+  . to run
+    cd /home/leipan/projects/dmtcp/git/navp/services/svc
+    dmtcp_launch /home/leipan/projects/dmtcp/git/navp/c/loop_with_hop
 
 . to call hop service
   curl "http://higgs.jpl.nasa.gov:8080/svc/hop?src_ip=137.78.248.95&dst_ip=137.78.73.87&port=6868&script=/home/leipan/projects/dmtcp/git/navp/services/svc/dmtcp_restart_script.sh"
