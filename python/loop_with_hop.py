@@ -5,8 +5,7 @@ import time
 import sys
 import socket
 
-if __name__ == '__main__':
-
+def get_ips():
   ip1 = "weather2.jpl.nasa.gov"
   ip2 = "higgs.jpl.nasa.gov"
 
@@ -15,30 +14,35 @@ if __name__ == '__main__':
   if dst_ip == src_ip:
     dst_ip = ip1
 
+  return src_ip, dst_ip
+
+
+def swap_ips(src_ip, dst_ip):
+  return dst_ip, src_ip
+
+
+
+if __name__ == '__main__':
+
+  src_ip, dst_ip = get_ips()
   print('src_ip: ', src_ip)
   print('dst_ip: ', dst_ip)
-
   port = 7788
 
-  l1 = 20
-  n = 0
-  while n < l1:
-    print("%d " % (n), end="")
+  loop_bound = 20
+
+  for i in range(loop_bound):
+    print("%d " % (i), end="")
     sys.stdout.flush()
     time.sleep(1)
 
-    if (n+1)%5 == 0:
-      ### print("\n calling hop()")
+    if (i+1)%5 == 0:
       print("")
       port += 1
       dmtcp.hop(src_ip, dst_ip, port)
 
-      ### swap the src and dst so we can hop back
-      tmp = src_ip
-      src_ip = dst_ip
-      dst_ip = tmp
-
-    n += 1
+      # swap the src and dst so we can hop back
+      src_ip, dst_ip = swap_ips(src_ip, dst_ip)
 
   print('')
 
