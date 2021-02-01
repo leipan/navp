@@ -20,15 +20,42 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
 
 #include "dmtcp.h"
 
-char *get_ip();
+void get_ip();
+
+void swap_ips(char x[], char y[]) {
+
+   char temp[256];
+   strcpy(temp, x);
+   strcpy(x, y);
+   strcpy(y, temp);
+}
+
 
 int main()
 {
-  get_ip();
+  char ip1[256];
+  char src_ip[256] = "weather.jpl.nasa.gov";
+  char dst_ip[256] = "higgs.jpl.nasa.gov";
+
+  printf("src_ip: %s\n", src_ip);
+  printf("dst_ip: %s\n", dst_ip);
+
+  get_ip(&ip1);
+  printf("ip1: %s\n", ip1);
+
+  if (strcmp(ip1, src_ip) != 0) {
+    printf("calling swap() ...\n");
+    swap_ips(src_ip, dst_ip);
+  }
+
+  printf("src_ip: %s\n", src_ip);
+  printf("dst_ip: %s\n", dst_ip);
+
   return 0;
 }

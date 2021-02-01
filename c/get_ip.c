@@ -43,15 +43,16 @@ void checkIPbuffer(char *IPbuffer)
 
 // Driver code 
 // int main() 
-char *get_ip() 
+void get_ip(char *hostbuffer) 
 { 
-	char hostbuffer[256]; 
+	// char hostbuffer[256]; 
 	char *IPbuffer; 
 	struct hostent *host_entry; 
 	int hostname; 
 
 	// To retrieve hostname 
-	hostname = gethostname(hostbuffer, sizeof(hostbuffer)); 
+	// hostname = gethostname(hostbuffer, sizeof(*hostbuffer)); 
+	hostname = gethostname(hostbuffer, 256); 
 	checkHostName(hostname); 
 
 	// To retrieve host information 
@@ -62,10 +63,11 @@ char *get_ip()
 	// address into ASCII string 
 	IPbuffer = inet_ntoa(*((struct in_addr*) host_entry->h_addr_list[0])); 
 
-	printf("Hostname: %s\n", hostbuffer); 
-	printf("Host IP: %s\n", IPbuffer); 
+	// printf("Hostname: %s\n", hostbuffer); 
+	// printf("Host IP: %s\n", IPbuffer); 
 
 	// return 0; 
-	return IPbuffer;
+	// return IPbuffer;
+	// return hostbuffer;
 } 
 
