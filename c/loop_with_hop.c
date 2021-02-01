@@ -20,12 +20,20 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
 
 #include "dmtcp.h"
 
-char *get_ip();
+
+void swap_ips(char x[], char y[]) {
+
+   char temp[256];
+   strcpy(temp, x);
+   strcpy(x, y);
+   strcpy(y, temp);
+}
 
 
 int call_shell_command(char *shell_command) {
@@ -120,11 +128,22 @@ int hop(int original_generation, char *src_ip, char *dst_ip, int port) {
 int main()
 {
   int dmtcp_enabled = dmtcp_is_enabled();
-  char *src_ip = "weather.jpl.nasa.gov";
-  char *dst_ip = "higgs.jpl.nasa.gov";
-  char *tmp;
-  int port=7788, r1, i, l1 = 25;
+  char src_ip[256] = "weather2.jpl.nasa.gov";
+  char dst_ip[256] = "higgs.jpl.nasa.gov";
+  char ip1[256];
+  int port=7788, r1, i, loop_bound = 20;
   int original_generation;
+
+  get_ip(&ip1);
+  // printf("ip1: %s\n", ip1);
+  
+  if (strcmp(ip1, src_ip) != 0) {
+    // printf("calling swap() ...\n");
+    swap_ips(src_ip, dst_ip);
+  } 
+
+  printf("src_ip: %s\n", src_ip);
+  printf("dst_ip: %s\n", dst_ip);
 
   if (!dmtcp_enabled) {
     printf("\n *** dmtcp_is_enabled: False. Run executable under dmtcp_launch if you want to hop among servers.\n\n");
@@ -134,7 +153,7 @@ int main()
   }
 
 
-  for (i=0; i<l1; i++) {
+  for (i=0; i<loop_bound; i++) {
     printf("%d ", i);
 
     if ((i+1)%5 == 0) {
@@ -143,9 +162,7 @@ int main()
       r1 = hop(original_generation, src_ip, dst_ip, port);
 
       // swap the src and dst so we can hop back
-      tmp = src_ip;
-      src_ip = dst_ip;
-      dst_ip = tmp;
+      swap_ips(src_ip, dst_ip);
     }
   }
 
