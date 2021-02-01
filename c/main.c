@@ -40,7 +40,7 @@ void swap_ips(char x[], char y[]) {
 int main()
 {
   char ip1[256];
-  char src_ip[256] = "weather.jpl.nasa.gov";
+  char src_ip[256] = "weather2.jpl.nasa.gov";
   char dst_ip[256] = "higgs.jpl.nasa.gov";
 
   printf("src_ip: %s\n", src_ip);
