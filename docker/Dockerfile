@@ -43,6 +43,6 @@ RUN git clone https://github.com/dmtcp/dmtcp.git /home/leipan/dmtcp && \
       git log -n 1
 RUN git clone https://leipan:e47e4b23ab852c2ba732260183b12033ad591018@github.com/leipan/navp.git /home/leipan/navp
 
-RUN ./configure --enable-debug --prefix=/home/leipan/local/dmtcp_installation && make -j clean && make -j8 && make install
+RUN ./configure --enable-fast-restart --enable-debug --prefix=/home/leipan/local/dmtcp_installation && make -j clean && make -j8 && make install
 
 ENTRYPOINT ["/bin/bash"]
