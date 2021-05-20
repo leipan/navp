@@ -40,3 +40,5 @@
 . to run the matchup dmtcp docker container
   docker run -v /home/leipan/projects/aria_esi/wvcc/pge/data/collocation_output_1granule/test:/home/ops/data:rw -ti dmtcp/dmtcp /home/ops/matchup_pge/run_matchup.sh
 
+. to get into a running container
+  docker exec -u 1000 -it <container ID> bash
