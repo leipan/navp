@@ -1,11 +1,20 @@
 # Dockerfile to build DMTCP image
-FROM centos:7
+### FROM centos:7
+FROM hysds/pge-base
+
 MAINTAINER Lei Pan <leipan@jpl.nasa.gov>
 LABEL description="WVCC matchup container with DMTCP installed together" \
       Version=1.0.0 \
       Vendor="JPL"
 
 USER root
+RUN source /opt/conda/bin/activate root \
+ && conda config --add channels conda-forge \
+ && conda install numpy \
+ && conda install netCDF4 \
+ && conda install pykdtree \
+ && conda install h5py \
+ && conda install basemap
 
 RUN yum -y update && yum -y --setopt=tsflags=nodocs install    \
       gcc-c++                                   \
@@ -23,10 +32,11 @@ RUN yum -y update && yum -y --setopt=tsflags=nodocs install    \
       && ln -s /usr/bin/python3 python          \
       && pip3 install --upgrade pip             \
       && pip3 install numpy                     \
-      && pip3 install pykdtree
+      && pip3 install pykdtree                  \
+      && pip3 install netCDF4                   \
+      && pip3 install h5py                      
 
 RUN set -ex \
-    && useradd -ms /bin/bash ops             \
     && echo "export PATH=$PATH:/home/ops/local/dmtcp_installation/bin" >> /home/ops/.bashrc \
     && echo "export DMTCP_ROOT=/home/ops/local/dmtcp_installation/" >> /home/ops/.bashrc \
     && echo "alias ll='ls -alF'" >> /home/ops/.bashrc \
@@ -77,4 +87,15 @@ RUN git clone https://leipan:e47e4b23ab852c2ba732260183b12033ad591018@github.com
 
 RUN ./configure --enable-debug CC=/opt/rh/devtoolset-7/root/bin/gcc CXX=/opt/rh/devtoolset-7/root/bin/g++ --prefix=/home/ops/local/dmtcp_installation && make -j clean && make -j8 && make install
 
-ENTRYPOINT ["/bin/bash"]
+# WVCC matchup pge
+USER ops
+COPY . /home/ops/matchup_pge
+RUN set -ex \
+ && cd /tmp \
+ && rm -rf CrIS_VIIRS_collocation-master \
+ && git clone https://github.com/leipan/CrIS_VIIRS_collocation-master.git \
+ && mv CrIS_VIIRS_collocation-master /home/ops/
+
+### ENTRYPOINT ["/bin/bash"]
+WORKDIR /home/ops
+CMD ["/bin/bash", "--login"]
