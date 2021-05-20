@@ -22,6 +22,8 @@ RUN yum -y update && yum -y --setopt=tsflags=nodocs install    \
       && cd /usr/local/bin                      \
       && ln -s /usr/bin/python3 python          \
       && pip3 install --upgrade pip             \
+      && pip3 install flask                     \
+      && pip3 install requests                  \
       && pip3 install numpy                     \
       && pip3 install pykdtree
 
@@ -77,4 +79,6 @@ RUN git clone https://leipan:e47e4b23ab852c2ba732260183b12033ad591018@github.com
 
 RUN ./configure --enable-debug CC=/opt/rh/devtoolset-7/root/bin/gcc CXX=/opt/rh/devtoolset-7/root/bin/g++ --prefix=/home/leipan/local/dmtcp_installation && make -j clean && make -j8 && make install
 
+WORKDIR /home/leipan/navp
 ENTRYPOINT ["/bin/bash"]
+
