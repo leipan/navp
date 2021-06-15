@@ -4,7 +4,7 @@ FROM hysds/pge-base
 
 MAINTAINER Lei Pan <leipan@jpl.nasa.gov>
 LABEL description="WVCC matchup container with DMTCP installed together" \
-      Version=1.0.0 \
+      Version=1.1.0 \
       Vendor="JPL"
 
 USER root
