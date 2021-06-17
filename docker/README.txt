@@ -13,7 +13,7 @@
   ### docker run --cap-add=SYS_PTRACE --security-opt seccomp=unconfined -ti dmtcp/dmtcp
   docker run --security-opt seccomp=unconfined -v /home/leipan/projects/aria_esi/wvcc/pge/data/collocation_output_1granule/test:/home/ops/data:rw -ti dmtcp/dmtcp /bin/bash
   (-v $host_dir:$guest_dir maps the host disk volume into the container)
-  (place the 3 .nc files under $host_dir)
+  (place the 4 .nc files under $host_dir)
 
 . to get into a running container (to run, e.g., dmtcp_command --checkpoint)
   docker ps (to get the <container ID>)
