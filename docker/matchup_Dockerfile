@@ -17,6 +17,7 @@ RUN source /opt/conda/bin/activate root \
  && conda install basemap
 
 RUN yum -y update && yum -y --setopt=tsflags=nodocs install    \
+      strace                                    \
       gcc-c++                                   \
       build-essential                           \
       git-core                                  \
