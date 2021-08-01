@@ -150,7 +150,7 @@ def hello():
          </p>
 
          <ul>
-         <li> <b>(S1)</b> ingest an executable (make sure services are on on both servers)
+         <li> <b>(S1)</b> ingest an executable (make sure services are on both servers)
          <p>
          <a href="{2}://{0}:{1}/svc/ingest?exe=/home/leipan/projects/dmtcp/git/navp/c/loop_with_hop">
          {2}://{0}:{1}/svc/ingest?exe=/home/leipan/projects/dmtcp/git/navp/c/loop_with_hop
