@@ -229,15 +229,20 @@ def hop():
 
   # src_ip is where the computation is from
   src_ip = request.args.get('src_ip', '')
+  print('src_ip: ', src_ip)
   logger.info('src_ip: {0}'.format(src_ip))
   # dst_ip is where the computation is migrating to
   dst_ip = request.args.get('dst_ip', '')
+  print('dst_ip: ', dst_ip)
   logger.info('dst_ip: {0}'.format(dst_ip))
   script = request.args.get('script', 'dmtcp_restart_script.sh')
+  print('script: ', script)
   logger.info('script: {0}'.format(script))
   port = request.args.get('port', '6869')
   logger.info('port: {0}'.format(port))
+  print('port: ', port)
   ckpt_filepath = request.args.get('ckpt', '')
+  print('ckpt_filepath: ', ckpt_filepath)
   logger.info('ckpt_filepath: {0}'.format(ckpt_filepath))
 
   if src_ip=='' or dst_ip=='':
@@ -247,9 +252,6 @@ def hop():
     logger.info('****** hop() elapsed time: %s' % str(executionEndTime - executionStartTime))
     return jsonify(dict1)
 
-  print('port: ', port)
-  print('src_ip: ', src_ip)
-  print('dst_ip: ', dst_ip)
 
   # this service lives on the dst_ip
   # first get dmtcp_restart_script.sh and the ckpt file from src_ip to dst_ip (local)
