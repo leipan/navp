@@ -24,6 +24,10 @@ def swap_ips(src_ip, dst_ip):
 
 if __name__ == '__main__':
 
+  if not dmtcp.isEnabled:
+    print('Run with dmtcp, like this: dmtcp_launch python loop_with_hop.py')
+    sys.exit(-1)
+
   src_ip, dst_ip = get_ips()
   print('src_ip: ', src_ip)
   print('dst_ip: ', dst_ip)
