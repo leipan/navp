@@ -32,6 +32,8 @@ RUN yum -y update && yum -y --setopt=tsflags=nodocs install    \
       && cd /usr/local/bin                      \
       && ln -s /usr/bin/python3 python          \
       && pip3 install --upgrade pip             \
+      && pip3 install flask                     \
+      && pip3 install requests                  \
       && pip3 install numpy                     \
       && pip3 install pykdtree                  \
       && pip3 install netCDF4                   \
