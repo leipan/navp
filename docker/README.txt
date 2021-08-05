@@ -11,13 +11,18 @@
 
 . to run dmtcp docker container
   ### docker run --cap-add=SYS_PTRACE --security-opt seccomp=unconfined -ti dmtcp/dmtcp
-  docker run --security-opt seccomp=unconfined --publish=8080:8080 -v /home/leipan/projects/aria_esi/wvcc/pge/data/collocation_output_1granule/test:/home/ops/data:rw -ti dmtcp/dmtcp /bin/bash
+  docker run --security-opt seccomp=unconfined --publish=18080:8080 --publish=122:22 -v /home/leipan/projects/aria_esi/wvcc/pge/data/collocation_output_1granule/test:/home/ops/data:rw -ti dmtcp/dmtcp /bin/bash
   (-v $host_dir:$guest_dir maps the host disk volume into the container)
   (place the 4 .nc files under $host_dir)
 
 . to get into a running container (to run, e.g., dmtcp_command --checkpoint)
   docker ps (to get the <container ID>)
   docker exec -u 1000 -it <container ID> bash
+  docker exec -u ops -it <container ID> bash
+
+. to copy all the files/dirs under a dir (e.g., /home/leipan/tmp/)
+  into a container:
+  docker cp /home/leipan/tmp/. a8d9790b205d:/home/ops/tmp
 
 . to debug the matchup/DMTCP integration
   cd data; strace -o tmp.log python ../CrIS_VIIRS_collocation-master/code_test_QY.py
