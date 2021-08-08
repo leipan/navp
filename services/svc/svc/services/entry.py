@@ -307,3 +307,80 @@ def hop():
 
 
 
+# ------------------------------------------------
+@app.route('/svc/hop2', methods=["GET"])
+@crossdomain(origin='*')
+def hop2():
+  """Run hop2"""
+  logger.info('****** hop2() starts.')
+  executionStartTime = int(time.time())
+
+  # assume script is under ~/data
+  # and the input is full path of the file
+  script = request.args.get('script', 'dmtcp_restart_script.sh')
+  print('script: ', script)
+  logger.info('script: {0}'.format(script))
+  port = request.args.get('port', '6869')
+  logger.info('port: {0}'.format(port))
+  print('port: ', port)
+  # assume ckpt_filepath is under ~/data
+  # and the input is full path of the dir
+  ckpt_filepath = request.args.get('ckpt', '')
+  print('ckpt_filepath: ', ckpt_filepath)
+  logger.info('ckpt_filepath: {0}'.format(ckpt_filepath))
+
+  # this service lives on the dst machine
+  # first copy dmtcp_restart_script.sh and the ckpt file from ./data to local (./)
+  # location of files
+  prefix = ''
+  if ckpt_filepath != '':
+    ckpt_basename = os.path.basename(ckpt_filepath)
+    prefix = ckpt_filepath.replace(ckpt_basename, '')
+
+  """
+  command_line = 'scp leipan@' + src_ip + ':' + prefix + script + ' ' + prefix + '.'
+  args = shlex.split(command_line)
+  ### print(args)
+  p = subprocess.Popen(args)
+  p.wait()
+  """
+  script_path = os.path.join(prefix, script)
+
+  ckpt_file = parse_script(os.path.join(prefix, script))
+  logger.info('ckpt_file: {0}'.format(ckpt_file))
+
+  command_line = 'scp leipan@' + src_ip + ':' + ckpt_file + ' ' + prefix + '.'
+  args = shlex.split(command_line)
+  ### print(args)
+  p = subprocess.Popen(args)
+  p.wait()
+
+  ckpt_files_dir = ckpt_file.replace('.dmtcp', '_files')
+  logger.info('ckpt_files_dir: {0}'.format(ckpt_files_dir))
+
+  command_line = 'scp -r leipan@' + src_ip + ':' + ckpt_files_dir + ' ' + prefix + '.'
+  args = shlex.split(command_line)
+  print(args)
+  p = subprocess.Popen(args)
+  p.wait()
+
+  # then run dmtcp_restart_script.sh on dst_ip
+  ### command_line = '/home/leipan/projects/dmtcp/git/navp/services/svc/dmtcp_restart_script.sh --coord-port ' + port
+  print('port: ', port)
+  print('dst_ip: ', dst_ip)
+  ### command_line = 'dmtcp_restart_script.sh --coord-port ' + port + ' --coord-host ' + dst_ip
+  command_line = prefix + 'dmtcp_restart_script.sh --coord-port ' + port + ' --coord-host localhost'
+  args = shlex.split(command_line)
+  print(args)
+  p = subprocess.Popen(args)
+  p.wait()
+
+  dict1 = {'mesg':'dmtcp_restart_script.sh called'}
+
+  executionEndTime = float(time.time())
+  print ('****** hop2() elapsed time: ', executionEndTime - executionStartTime)
+  logger.info('****** hop2() elapsed time: %s' % str(executionEndTime - executionStartTime))
+
+  return jsonify(dict1)
+
+
