@@ -11,6 +11,7 @@ import subprocess
 import time
 import shlex
 import shutil
+import requests
 
 ckptRetVal = 0
 sessionList = []
@@ -189,18 +190,26 @@ def hop2(src_ip, dst_ip, port):
       if prefix != '' and prefix != '/home/ops/data':
         print('prefix: ', prefix)
         shutil.copyfile(fname, os.path.join('/home/ops/data/', ckpt_basename))
-        real_script = os.path.realpath('dmtcp_restart_script.sh')
+        print('copied {} to /home/ops/data/'.format(fname))
+        real_script = os.path.realpath('./dmtcp_restart_script.sh')
+        print('real_script: ', real_script)
         shutil.copyfile(real_script, os.path.join('/home/ops/data/', 'dmtcp_restart_script.sh'))
+        print('copied {} to /home/ops/data/dmtcp_restart_script.sh'.format(real_script))
 
         # call service hop2()
-        restart_cmd = \
-          'curl "http://{0}/svc/hop2?port={1}&ckpt={2}" '.format(dst_ip, port, ckpt_basename)
+        ### restart_cmd = 'curl "http://{0}/svc/hop2?port={1}&ckpt={2}" '.format(dst_ip, port, ckpt_basename)
+        restart_cmd = 'http://{0}/svc/hop2?port={1}&ckpt={2}'.format(dst_ip, port, ckpt_basename)
         print('restart_cmd: ', restart_cmd)
 
+        """
         args = shlex.split(restart_cmd)
-        ### print(args)
+        print('args: ', args)
         p = subprocess.Popen(args)
         p.wait()
+        """
+
+        x = requests.get(restart_cmd)
+        print(x.text)
 
     ### print("The process is resuming from a checkpoint.")
     # after hop(), the process will restart on a new node
