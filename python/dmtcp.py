@@ -10,6 +10,7 @@ from ctypes import *
 import subprocess
 import time
 import shlex
+import shutil
 
 ckptRetVal = 0
 sessionList = []
@@ -139,15 +140,13 @@ def hop(src_ip, dst_ip, port):
 
   ### fname = dmtcp.checkpointFilename()
   fname = checkpointFilename()
-  """
   if fname != '':
     print ('fname: ', fname)
-  """
 
   ### if dmtcp.isResume():
   if isResume():
     restart_cmd = \
-      'curl "http://{0}:8080/svc/hop?src_ip={1}&dst_ip={2}&port={3}&ckpt={4}" '.format(dst_ip, src_ip, dst_ip, port, fname)
+      'curl "http://{0}/svc/hop?src_ip={1}&dst_ip={2}&port={3}&ckpt={4}" '.format(dst_ip, src_ip, dst_ip, port, fname)
     ### print('restart_cmd: ', restart_cmd)
 
     args = shlex.split(restart_cmd)
@@ -163,6 +162,54 @@ def hop(src_ip, dst_ip, port):
     ### print("The process is restarting from a previous checkpoint.")
     pass
   return
+
+
+def hop2(src_ip, dst_ip, port):
+
+  ### print("in hop.")
+  ### dmtcp.checkpoint()
+  checkpoint()
+  time.sleep(1)
+  ### print("checkpoint done.")
+
+  fname = checkpointFilename()
+  if fname != '':
+    print ('fname: ', fname)
+
+  if isResume():
+
+    # copy fname and dmtcp_restart_script.sh to ~/data mount if it is not there yet
+    # in the future we could use AWS s3 buckets
+    prefix = ''
+    if fname != '':
+      ckpt_basename = os.path.basename(fname)
+      prefix = fname.replace(ckpt_basename, '')
+      print('prefix: ', prefix)
+
+      if prefix != '' and prefix != '/home/ops/data':
+        print('prefix: ', prefix)
+        shutil.copyfile(fname, '/home/ops/data/')
+        shutil.copyfile(os.path.join(prefix, 'dmtcp_restart_script.sh'), '/home/ops/data/')
+
+        # call service hop2()
+        restart_cmd = \
+          'curl "http://{0}/svc/hop2?port={1}&ckpt={2}" '.format(dst_ip, port, ckpt_basename)
+        print('restart_cmd: ', restart_cmd)
+
+        args = shlex.split(restart_cmd)
+        ### print(args)
+        p = subprocess.Popen(args)
+        p.wait()
+
+    ### print("The process is resuming from a checkpoint.")
+    # after hop(), the process will restart on a new node
+    sys.exit(0)
+  else:
+    # restarting after hop() on a new node
+    ### print("The process is restarting from a previous checkpoint.")
+    pass
+  return
+
 
 
 def createSessionList():
