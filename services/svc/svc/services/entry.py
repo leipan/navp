@@ -325,57 +325,45 @@ def hop2():
   print('port: ', port)
   # assume ckpt_filepath is under ~/data
   # and the input is full path of the dir
-  ckpt_filepath = request.args.get('ckpt', '')
-  print('ckpt_filepath: ', ckpt_filepath)
-  logger.info('ckpt_filepath: {0}'.format(ckpt_filepath))
+  ckpt_file = request.args.get('ckpt', '')
+  print('ckpt_file: ', ckpt_file)
+  logger.info('ckpt_file: {0}'.format(ckpt_file))
 
   # this service lives on the dst machine
   # first copy dmtcp_restart_script.sh and the ckpt file from ./data to local (./)
-  # location of files
-  prefix = ''
-  if ckpt_filepath != '':
-    ckpt_basename = os.path.basename(ckpt_filepath)
-    prefix = ckpt_filepath.replace(ckpt_basename, '')
+  script_path = os.path.join('/home/ops/data', script)
+  parsed_ckpt_file = parse_script(script_path)
+  parsed_ckpt_file_basename = os.path.basename(parsed_ckpt_file)
+  prefix = parsed_ckpt_file.replace(parsed_ckpt_file_basename, '')
+  print('prefix: ', prefix)
 
-  """
-  command_line = 'scp leipan@' + src_ip + ':' + prefix + script + ' ' + prefix + '.'
-  args = shlex.split(command_line)
-  ### print(args)
-  p = subprocess.Popen(args)
-  p.wait()
-  """
-  script_path = os.path.join(prefix, script)
-
-  ckpt_file = parse_script(os.path.join(prefix, script))
+  print('ckpt_file: ', ckpt_file)
   logger.info('ckpt_file: {0}'.format(ckpt_file))
+  print('parsed_ckpt_file: ', parsed_ckpt_file)
+  logger.info('parsed_ckpt_file: {0}'.format(parsed_ckpt_file))
 
-  command_line = 'scp leipan@' + src_ip + ':' + ckpt_file + ' ' + prefix + '.'
-  args = shlex.split(command_line)
-  ### print(args)
-  p = subprocess.Popen(args)
-  p.wait()
+  if parsed_ckpt_file_basename == ckpt_file:
+    shutil.copyfile(script_path, './dmtcp_restart_script.sh')
+    shutil.copyfile(os.path.join('/home/ops/data', ckpt_file), os.path.join(prefix, ckpt_file))
 
-  ckpt_files_dir = ckpt_file.replace('.dmtcp', '_files')
-  logger.info('ckpt_files_dir: {0}'.format(ckpt_files_dir))
+    # then run dmtcp_restart_script.sh on dst_ip
+    ### command_line = '/home/leipan/projects/dmtcp/git/navp/services/svc/dmtcp_restart_script.sh --coord-port ' + port
+    print('port: ', port)
+    ### print('dst_ip: ', dst_ip)
+    ### command_line = 'dmtcp_restart_script.sh --coord-port ' + port + ' --coord-host ' + dst_ip
+    command_line = './dmtcp_restart_script.sh --coord-port ' + port + ' --coord-host localhost'
+    print('command_line: ', command_line)
 
-  command_line = 'scp -r leipan@' + src_ip + ':' + ckpt_files_dir + ' ' + prefix + '.'
-  args = shlex.split(command_line)
-  print(args)
-  p = subprocess.Popen(args)
-  p.wait()
+    """
+    args = shlex.split(command_line)
+    print(args)
+    p = subprocess.Popen(args)
+    p.wait()
+    """
 
-  # then run dmtcp_restart_script.sh on dst_ip
-  ### command_line = '/home/leipan/projects/dmtcp/git/navp/services/svc/dmtcp_restart_script.sh --coord-port ' + port
-  print('port: ', port)
-  print('dst_ip: ', dst_ip)
-  ### command_line = 'dmtcp_restart_script.sh --coord-port ' + port + ' --coord-host ' + dst_ip
-  command_line = prefix + 'dmtcp_restart_script.sh --coord-port ' + port + ' --coord-host localhost'
-  args = shlex.split(command_line)
-  print(args)
-  p = subprocess.Popen(args)
-  p.wait()
-
-  dict1 = {'mesg':'dmtcp_restart_script.sh called'}
+    dict1 = {'mesg':'dmtcp_restart_script.sh called'}
+  else:
+    dict1 = {'error':'dmtcp_restart_script.sh points to wrong ckpt file'}
 
   executionEndTime = float(time.time())
   print ('****** hop2() elapsed time: ', executionEndTime - executionStartTime)
