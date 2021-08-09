@@ -166,7 +166,7 @@ def hop(src_ip, dst_ip, port):
 
 def hop2(src_ip, dst_ip, port):
 
-  ### print("in hop.")
+  print("in hop, from {0} to {1}".format(src_ip, dst_ip))
   ### dmtcp.checkpoint()
   checkpoint()
   time.sleep(1)
@@ -184,12 +184,13 @@ def hop2(src_ip, dst_ip, port):
     if fname != '':
       ckpt_basename = os.path.basename(fname)
       prefix = fname.replace(ckpt_basename, '')
-      print('prefix: ', prefix)
+      ### print('prefix: ', prefix)
 
       if prefix != '' and prefix != '/home/ops/data':
         print('prefix: ', prefix)
-        shutil.copyfile(fname, '/home/ops/data/')
-        shutil.copyfile(os.path.join(prefix, 'dmtcp_restart_script.sh'), '/home/ops/data/')
+        shutil.copyfile(fname, os.path.join('/home/ops/data/', ckpt_basename))
+        real_script = os.path.realpath('dmtcp_restart_script.sh')
+        shutil.copyfile(real_script, os.path.join('/home/ops/data/', 'dmtcp_restart_script.sh'))
 
         # call service hop2()
         restart_cmd = \
