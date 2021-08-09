@@ -332,8 +332,10 @@ def hop2():
   # this service lives on the dst machine
   # first copy dmtcp_restart_script.sh and the ckpt file from ./data to local (./)
   script_path = os.path.join('/home/ops/data', script)
+  print('script_path: ', script_path)
   parsed_ckpt_file = parse_script(script_path)
   parsed_ckpt_file_basename = os.path.basename(parsed_ckpt_file)
+  # prefix is where the ckpt memory image is and is where the restart script is pointing at
   prefix = parsed_ckpt_file.replace(parsed_ckpt_file_basename, '')
   print('prefix: ', prefix)
 
@@ -343,8 +345,10 @@ def hop2():
   logger.info('parsed_ckpt_file: {0}'.format(parsed_ckpt_file))
 
   if parsed_ckpt_file_basename == ckpt_file:
+
+    # copy dmtcp files from data/ to local dirs
     shutil.copyfile(script_path, './dmtcp_restart_script.sh')
-    shutil.copyfile(os.path.join('/home/ops/data', ckpt_file), os.path.join(prefix, ckpt_file))
+    shutil.copyfile(os.path.join('/home/ops/data', parsed_ckpt_file_basename), os.path.join(prefix, parsed_ckpt_file_basename))
 
     # then run dmtcp_restart_script.sh on dst_ip
     ### command_line = '/home/leipan/projects/dmtcp/git/navp/services/svc/dmtcp_restart_script.sh --coord-port ' + port
@@ -354,16 +358,14 @@ def hop2():
     command_line = './dmtcp_restart_script.sh --coord-port ' + port + ' --coord-host localhost'
     print('command_line: ', command_line)
 
-    """
     args = shlex.split(command_line)
     print(args)
     p = subprocess.Popen(args)
     p.wait()
-    """
 
     dict1 = {'mesg':'dmtcp_restart_script.sh called'}
   else:
-    dict1 = {'error':'dmtcp_restart_script.sh points to wrong ckpt file'}
+    dict1 = {'error':'dmtcp_restart_script.sh is pointing at the wrong dmtcp memory image'}
 
   executionEndTime = float(time.time())
   print ('****** hop2() elapsed time: ', executionEndTime - executionStartTime)
