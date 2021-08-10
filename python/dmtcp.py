@@ -185,12 +185,13 @@ def hop2(src_ip, dst_ip, port):
     if fname != '':
       ckpt_basename = os.path.basename(fname)
       prefix = fname.replace(ckpt_basename, '')
-      ### print('prefix: ', prefix)
+      print('prefix: ', prefix)
 
-      if prefix != '' and prefix != '/home/ops/data':
-        print('prefix: ', prefix)
-        shutil.copyfile(fname, os.path.join('/home/ops/data/', ckpt_basename))
-        print('copied {} to /home/ops/data/'.format(fname))
+      if prefix != '':
+        if prefix != '/home/ops/data/':
+          shutil.copyfile(fname, os.path.join('/home/ops/data/', ckpt_basename))
+          print('copied {} to /home/ops/data/'.format(fname))
+
         real_script = os.path.realpath('./dmtcp_restart_script.sh')
         print('real_script: ', real_script)
         shutil.copyfile(real_script, os.path.join('/home/ops/data/', 'dmtcp_restart_script.sh'))
