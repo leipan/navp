@@ -355,7 +355,7 @@ def hop2():
     print('port: ', port)
     ### print('dst_ip: ', dst_ip)
     ### command_line = 'dmtcp_restart_script.sh --coord-port ' + port + ' --coord-host ' + dst_ip
-    command_line = './dmtcp_restart_script.sh --coord-port ' + port + ' --coord-host localhost'
+    command_line = 'sh ./dmtcp_restart_script.sh --coord-port ' + port + ' --coord-host localhost'
     print('command_line: ', command_line)
 
     args = shlex.split(command_line)
