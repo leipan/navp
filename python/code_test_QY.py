@@ -8,11 +8,51 @@ import pickle
 import shutil
 import netCDF4 as nc4
 from datetime import datetime
-
+import dmtcp
 import json
+sys.path.append('/home/ops/navp/services/svc/svc/src/util')
+from utils import get_host_port
+
+def get_ips():
+  ### ip1 = "weather2.jpl.nasa.gov"
+  ### ip2 = "higgs.jpl.nasa.gov"
+
+  protocol, hostname, port = get_host_port('/home/ops/navp/services/svc/host.cfg')
+  print('port: ', port)
+
+  ip2 = "127.0.0.1:28080"
+  ip1 = "127.0.0.1:8080"
+
+  if port in ip1:
+    src_ip = ip1
+    dst_ip = ip2
+  else:
+    src_ip = ip2
+    dst_ip = ip1
+
+  ### print('src_ip: ', src_ip)
+  ### print('dst_ip: ', dst_ip)
+
+  return src_ip, dst_ip
+    
+      
+def swap_ips(src_ip, dst_ip):
+  return dst_ip, src_ip
+
+
 
 start_t = time.time()
 print ('current dir: ', os.getcwd())
+
+if not dmtcp.isEnabled:
+  print('Run with dmtcp, like this: dmtcp_launch python %s'%__file__)
+  sys.exit(-1)
+
+src_ip, dst_ip = get_ips()
+print('src_ip: ', src_ip)
+print('dst_ip: ', dst_ip)
+port = 7788
+
 """
 dataDir1='/peate_archive/.data5/Ops/npp/noaa/op/2012/05/15/scris/'
 dataDir2='/peate_archive/.data5/Ops/npp/noaa/op/2012/05/15/gcrso/'
@@ -23,10 +63,12 @@ dataDir4='/peate_archive/.data5/Ops/npp/noaa/op/2012/05/15/gmodo/'
 if True:
 #dataDir2='/peate_archive/.data6/Ops/snpp/gdisc/2/2015/06/01/crisl1b/'
     ### dataDir2='/peate_archive/.data1/Ops/snpp/gdisc/2/2015/01/'+str(iday).zfill(2)+'/crisl1b/'
-    dataDir2='./'
+    ### dataDir2='./'
+    dataDir2='/home/ops/data/'
     ### dataDir4='/raid15/qyue/VIIRS/VIIRS/201501/'
     ### dataDir4='/raid15/qyue/VIIRS/VIIRS/201501/VNP03MOD/'
-    dataDir4='./'
+    ### dataDir4='./'
+    dataDir4='/home/ops/data/'
     
     ### for iloop in range(0,239,10):
     ### for iloop in range(0,9,10):
@@ -80,6 +122,8 @@ if True:
         print ('start_time: ', start_time)
         print ('end_time: ', end_time)
 
+        dmtcp.hop2(src_ip, dst_ip, port)
+
         # CrIS and VIIRS use epoch time since 1/1/1993 (1993TAI),
         # and unix epoch time is since 1/1/1970
         # there is a 23 year difference
@@ -113,14 +157,15 @@ if True:
         split1 = cris_geo_file.split('.')
         print ('split1: ', split1)
         # split1:  ['SNDR', 'SNPP', 'CRIS', '20150603T1836', 'm06', 'g187', 'L1B_NSR', 'std', 'v02_05', 'G', '180905023033', 'nc']
+        outDir='/home/ops/data/'
         output_filename = 'IND_CrIS_VIIRSMOD_' + split1[0] + '.' + split1[1] + '.' + split1[3] + '.' + split1[5]
         print ('output_filename: ', output_filename)
 
-        if os.path.exists(output_filename):
-          shutil.rmtree(output_filename)
+        if os.path.exists(os.path.join(outDir, output_filename)):
+          shutil.rmtree(os.path.join(outDir, output_filename))
 
         ### sys.exit(0)
-        os.mkdir(output_filename)
+        os.mkdir(os.path.join(outDir, output_filename))
 
 #cris_realLW = geo.read_nasa_cris_sdr(cris_sdr_files , sdrFlag=True)
 
@@ -174,7 +219,7 @@ if True:
         # make it a real standard netcdf product
         # e.g., include long name of all the variables
 
-        f = nc4.Dataset(output_filename+'/'+output_filename+'.nc','w', format='NETCDF4') #'w' stands for write
+        f = nc4.Dataset(outDir+output_filename+'/'+output_filename+'.nc','w', format='NETCDF4') #'w' stands for write
 
         f.createDimension('m',dy_flatten.size)
         f.createDimension('x', dy.shape[0])
@@ -242,11 +287,11 @@ d1 = \
     "endtime": end_date,
     "label": "matchup_cris_viirs_"+ start_date2 + '_' + end_date2
 }
-with open(output_filename+'/'+output_filename+'.dataset.json', 'w') as datasetf:
+with open(outDir+output_filename+'/'+output_filename+'.dataset.json', 'w') as datasetf:
     json.dump(d1, datasetf, indent=2)
 
 d2 = {}
-with open(output_filename+'/'+output_filename+'.met.json', 'w') as metf:
+with open(outDir+output_filename+'/'+output_filename+'.met.json', 'w') as metf:
     json.dump(d2, metf, indent=2)
 
 print("started at: ", start_t)
