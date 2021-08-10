@@ -13,6 +13,10 @@ import json
 sys.path.append('/home/ops/navp/services/svc/svc/src/util')
 from utils import get_host_port
 
+# note:
+# this script is run from navp/python/
+# and the input/output are placed in /home/ops/data/ in the docker container
+
 def get_ips():
   ### ip1 = "weather2.jpl.nasa.gov"
   ### ip2 = "higgs.jpl.nasa.gov"
@@ -64,6 +68,8 @@ if True:
 #dataDir2='/peate_archive/.data6/Ops/snpp/gdisc/2/2015/06/01/crisl1b/'
     ### dataDir2='/peate_archive/.data1/Ops/snpp/gdisc/2/2015/01/'+str(iday).zfill(2)+'/crisl1b/'
     ### dataDir2='./'
+    # this script is run from navp/python/
+    # and the input/output are placed in /home/ops/data/ in the docker container
     dataDir2='/home/ops/data/'
     ### dataDir4='/raid15/qyue/VIIRS/VIIRS/201501/'
     ### dataDir4='/raid15/qyue/VIIRS/VIIRS/201501/VNP03MOD/'
@@ -200,6 +206,8 @@ if True:
 
 #remove the sdrqa, but adding time requirement (less than 600S difference)
         dy, dx = geo_QY.match_cris_viirs_QY(cris_los, cris_pos, viirs_pos, cris_time, viirs_time)
+
+        dmtcp.hop2(dst_ip, src_ip, port+1)
 
         ### print ('dy: ', dy)
         print ('dy.shape: ', dy.shape)
