@@ -4,6 +4,7 @@ import urllib
 import http.client
 import json
 import re
+import csv
 
 import requests, time, json
 import shlex, subprocess
@@ -165,6 +166,33 @@ def hello():
          </a>.
          </p>
          </li>
+
+         <li> <b>(S3)</b> list jobs
+         <p>
+         <a href="{2}://{0}:{1}/svc/list_jobs?">
+         {2}://{0}:{1}/svc/list_jobs
+         </a>.
+         </p>
+         </li>
+
+         <li> <b>(S4)</b> get job
+         <p>
+         <a href="{2}://{0}:{1}/svc/get_job?id=2">
+         {2}://{0}:{1}/svc/get_job?id=2
+         </a>.
+         </p>
+         </li>
+
+         <li> <b>(S5)</b> get job
+         <p>
+         <a href="{2}://{0}:{1}/svc/publish_job?status=ckpt">
+         {2}://{0}:{1}/svc/publish_job?status=ckpt
+         </a>.
+         </p>
+         </li>
+
+
+
          </ul>
 
          <br>
@@ -304,6 +332,177 @@ def hop():
   logger.info('****** hop() elapsed time: %s' % str(executionEndTime - executionStartTime))
 
   return jsonify(dict1)
+
+
+
+# ------------------------------------------------
+@app.route('/svc/publish_job', methods=["GET"])
+@crossdomain(origin='*')
+def publish_job():
+  """Run publish_job"""
+  logger.info('****** publish_job() starts.')
+  executionStartTime = int(time.time())
+
+  status = request.args.get('status', '')
+
+  jsonArray = []
+  # open jobs.csv and read
+      
+  #read csv file
+  csvFilePath = 'jobs.csv'
+  with open(csvFilePath, encoding='utf-8') as csvf: 
+    #load csv file data using csv library's dictionary reader
+    csvReader = csv.DictReader(csvf) 
+
+    #convert each csv row into python dict
+    for row in csvReader: 
+      #add this python dict to json array
+      print('row: ', row)
+      jsonArray.append(row)
+
+  ### print('type(jsonArray): ', type(jsonArray))
+  ### print('jsonArray[0]: ', jsonArray[0])
+
+  # put status into next key of OrderedDict
+  key1 = next(reversed(jsonArray[0]))
+  print('recent key: ', key1)
+  key2 = int(key1) + 1
+  print('next key: ', key2)
+  jsonArray[0][key2] = status
+  print(jsonArray[0])
+
+  # write new OrderedDict back to jobs.csv
+  keys, values = [], []
+  for key, value in jsonArray[0].items():
+    keys.append(key)
+    values.append(value)
+
+  with open(csvFilePath, "w") as outfile:
+    csvwriter = csv.writer(outfile)
+    csvwriter.writerow(keys)
+    csvwriter.writerow(values)
+
+  # mk subdir of id
+
+  # if status is ckpt, copy dmtcp files to subdir id
+
+  # if status is finished, copy product to subdir id
+
+  dict1 = {'mesg':'job published with status={}'.format(status)}
+
+  executionEndTime = float(time.time())
+  print ('****** publish_job() elapsed time: ', executionEndTime - executionStartTime)
+  logger.info('****** publish_job() elapsed time: %s' % str(executionEndTime - executionStartTime))
+
+  return jsonify(dict1)
+
+
+
+
+# ------------------------------------------------
+@app.route('/svc/list_jobs', methods=["GET"])
+@crossdomain(origin='*')
+def list_jobs():
+  """Run list_jobs"""
+  logger.info('****** list_jobs() starts.')
+  executionStartTime = int(time.time())
+
+  jsonArray = []
+  # open jobs.csv and read
+      
+  #read csv file
+  csvFilePath = 'jobs.csv'
+  with open(csvFilePath, encoding='utf-8') as csvf: 
+    #load csv file data using csv library's dictionary reader
+    csvReader = csv.DictReader(csvf) 
+
+    #convert each csv row into python dict
+    for row in csvReader: 
+      #add this python dict to json array
+      print('row: ', row)
+      jsonArray.append(row)
+
+  ### print('type(jsonArray): ', type(jsonArray))
+  ### print('jsonArray[0]: ', jsonArray[0])
+
+  # check status with job_id
+  job_id = '2'
+  """
+  for key, value in jsonArray[0].items():
+    if job_id in key:
+      print('value: ', value)
+  """
+
+  print(jsonArray[0][job_id])
+
+  executionEndTime = float(time.time())
+  print ('****** list_jobs() elapsed time: ', executionEndTime - executionStartTime)
+  logger.info('****** list_jobs() elapsed time: %s' % str(executionEndTime - executionStartTime))
+
+  return jsonify(jsonArray[0])
+
+
+
+
+
+
+
+# ------------------------------------------------
+@app.route('/svc/get_job', methods=["GET"])
+@crossdomain(origin='*')
+def get_job():
+  """Run get_job"""
+  logger.info('****** get_job() starts.')
+  executionStartTime = int(time.time())
+
+  # get job status with job_id
+  job_id = request.args.get('id', '')
+
+  #read csv file
+  jsonArray = []
+  csvFilePath = 'jobs.csv'
+  with open(csvFilePath, encoding='utf-8') as csvf: 
+    #load csv file data using csv library's dictionary reader
+    csvReader = csv.DictReader(csvf) 
+
+    #convert each csv row into python dict
+    for row in csvReader: 
+      #add this python dict to json array
+      print('row: ', row)
+      jsonArray.append(row)
+
+  ### print('type(jsonArray): ', type(jsonArray))
+  ### print('jsonArray[0]: ', jsonArray[0])
+
+  # check status with job_id
+  job_id = '2'
+
+  print(jsonArray[0][job_id])
+
+
+  # if status is 'ckpt'
+  # copy dmtcp files to local
+
+  # restart job
+
+
+  # if status is 'new'
+
+  # start job
+
+  # publish products
+
+
+  executionEndTime = float(time.time())
+  print ('****** get_job() elapsed time: ', executionEndTime - executionStartTime)
+  logger.info('****** get_job() elapsed time: %s' % str(executionEndTime - executionStartTime))
+
+  ### return jsonify(dict1)
+  return (jsonArray[0][job_id])
+
+
+
+
 
 
 
