@@ -12,6 +12,7 @@ import time
 import shlex
 import shutil
 import requests
+from datetime import datetime
 
 ckptRetVal = 0
 sessionList = []
@@ -163,6 +164,65 @@ def hop(src_ip, dst_ip, port):
     ### print("The process is restarting from a previous checkpoint.")
     pass
   return
+
+
+
+
+
+def publish(src_ip, dst_ip, port, status):
+
+  print("in publish, from {0} to {1} with status={2}".format(src_ip, dst_ip, status))
+
+  if status == 'ckpt':
+    # checkpoint
+    checkpoint()
+    time.sleep(1)
+
+    if isResume():
+
+      fname = checkpointFilename()
+      if fname != '':
+        print ('fname: ', fname)
+        ckpt_basename = os.path.basename(fname)
+        prefix = fname.replace(ckpt_basename, '')
+        print('prefix: ', prefix)
+
+        # copy dmtcp files to a subdir named by time
+        time_string = datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
+        subdir1 = os.path.join('/home/ops/data/', time_string)
+        if not os.path.isdir(subdir1):
+          os.mkdir(subdir1)
+
+        shutil.copyfile(fname, os.path.join(subdir1, ckpt_basename))
+        print('copied {0} to {1}'.format(fname, subdir1))
+
+        real_script = os.path.realpath('./dmtcp_restart_script.sh')
+        print('real_script: ', real_script)
+        shutil.copyfile(real_script, os.path.join(subdir1, 'dmtcp_restart_script.sh'))
+        print('copied {0} to {1}/dmtcp_restart_script.sh'.format(real_script, subdir1))
+
+        restart_cmd = 'http://{0}/svc/publish_job?status={1}&dir={2}'.format(dst_ip, 'ckpt', subdir1)
+        print('restart_cmd: ', restart_cmd)
+
+        x = requests.get(restart_cmd)
+        print(x.text)
+
+        sys.exit(0)
+
+      # call service publish_job with status and subdir name
+
+      # continue running the app
+  elif status == 'finished':
+    # copy resulting products to a subdir named by time
+
+    # call service publish_job with status='finished' and subdir name
+    
+    # continue running the app (for timing, return mesg etc.)
+
+    sys.exit(0)
+
+
+
 
 
 def hop2(src_ip, dst_ip, port):
