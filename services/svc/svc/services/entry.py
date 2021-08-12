@@ -344,6 +344,9 @@ def publish_job():
   executionStartTime = int(time.time())
 
   status = request.args.get('status', '')
+  print('status: ', status)
+  subdir1 = request.args.get('dir', '')
+  print('subdir1: ', subdir1)
 
   jsonArray = []
   # open jobs.csv and read
