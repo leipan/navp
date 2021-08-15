@@ -169,7 +169,7 @@ def hop(src_ip, dst_ip, port):
 
 
 
-def publish(src_ip, dst_ip, port, status):
+def publish(src_ip, dst_ip, port, status, outDir, job_id):
 
   print("in publish, from {0} to {1} with status={2}".format(src_ip, dst_ip, status))
 
@@ -207,19 +207,21 @@ def publish(src_ip, dst_ip, port, status):
         x = requests.get(restart_cmd)
         print(x.text)
 
-        sys.exit(0)
+        ### sys.exit(0)
 
       # call service publish_job with status and subdir name
 
       # continue running the app
   elif status == 'finished':
-    # copy resulting products to a subdir named by time
 
     # call service publish_job with status='finished' and subdir name
-    
-    # continue running the app (for timing, return mesg etc.)
+    restart_cmd = 'http://{0}/svc/publish_job?status={1}&id={2}'.format(dst_ip, 'finished', job_id)
+    print('restart_cmd: ', restart_cmd)
 
-    sys.exit(0)
+    x = requests.get(restart_cmd)
+    print(x.text)
+    
+
 
 
 
