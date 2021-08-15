@@ -167,7 +167,7 @@ def hello():
          </p>
          </li>
 
-         <li> <b>(S3)</b> list jobs
+         <li> <b>(S3)</b> list jobs in job pool
          <p>
          <a href="{2}://{0}:{1}/svc/list_jobs?">
          {2}://{0}:{1}/svc/list_jobs
@@ -175,18 +175,28 @@ def hello():
          </p>
          </li>
 
-         <li> <b>(S4)</b> get job
+         <li> <b>(S4)</b> get job with id, or if no id is provided, get next job that is 'new' or 'ckpt'
          <p>
-         <a href="{2}://{0}:{1}/svc/get_job?id=2">
-         {2}://{0}:{1}/svc/get_job?id=2
+         <a href="{2}://{0}:{1}/svc/get_job?id=9">
+         {2}://{0}:{1}/svc/get_job?id=9
+         </a>.
+         </p>
+         <p>
+         <a href="{2}://{0}:{1}/svc/get_job">
+         {2}://{0}:{1}/svc/get_job
          </a>.
          </p>
          </li>
 
-         <li> <b>(S5)</b> get job
+         <li> <b>(S5)</b> publish job with id
          <p>
-         <a href="{2}://{0}:{1}/svc/publish_job?status=ckpt">
-         {2}://{0}:{1}/svc/publish_job?status=ckpt
+         <a href="{2}://{0}:{1}/svc/publish_job?id=1&status=finished&dir=/home/ops/data/IND_CrIS_VIIRSMOD_SNDR.SNPP.20150601T1548.g159/">
+         {2}://{0}:{1}/svc/publish_job?id=1&status=finished&dir=/home/ops/data/IND_CrIS_VIIRSMOD_SNDR.SNPP.20150601T1548.g159/
+         </a>.
+         </p>
+         <p>
+         <a href="{2}://{0}:{1}/svc/publish_job?id=2&status=ckpt">
+         {2}://{0}:{1}/svc/publish_job?id=2&status=ckpt
          </a>.
          </p>
          </li>
@@ -335,6 +345,17 @@ def hop():
 
 
 
+def copytree(src, dst, symlinks=False, ignore=None):
+  for item in os.listdir(src):
+    s = os.path.join(src, item)
+    d = os.path.join(dst, item)
+    if os.path.isdir(s):
+      shutil.copytree(s, d, symlinks, ignore)
+    else:
+      shutil.copy2(s, d)
+
+
+
 # ------------------------------------------------
 @app.route('/svc/publish_job', methods=["GET"])
 @crossdomain(origin='*')
@@ -347,31 +368,38 @@ def publish_job():
   print('status: ', status)
   subdir1 = request.args.get('dir', '')
   print('subdir1: ', subdir1)
+  job_id = request.args.get('id', '')
+  print('job_id: ', job_id)
 
   jsonArray = []
   # open jobs.csv and read
       
-  #read csv file
+  # read csv file
   csvFilePath = 'jobs.csv'
   with open(csvFilePath, encoding='utf-8') as csvf: 
-    #load csv file data using csv library's dictionary reader
+    # load csv file data using csv library's dictionary reader
     csvReader = csv.DictReader(csvf) 
 
-    #convert each csv row into python dict
+    # convert each csv row into python dict
     for row in csvReader: 
-      #add this python dict to json array
+      # add this python dict to json array
       print('row: ', row)
       jsonArray.append(row)
 
   ### print('type(jsonArray): ', type(jsonArray))
   ### print('jsonArray[0]: ', jsonArray[0])
 
-  # put status into next key of OrderedDict
-  key1 = next(reversed(jsonArray[0]))
-  print('recent key: ', key1)
-  key2 = int(key1) + 1
-  print('next key: ', key2)
-  jsonArray[0][key2] = status
+  if job_id == '': # create a new job with status
+    # put status into next key of OrderedDict
+    key1 = next(reversed(jsonArray[0]))
+    print('recent key: ', key1)
+    key2 = str(int(key1) + 1)
+    print('next key: ', key2)
+    jsonArray[0][key2] = status
+  else: # update the job status
+    jsonArray[0][job_id] = status
+    key2 = job_id
+
   print(jsonArray[0])
 
   # write new OrderedDict back to jobs.csv
@@ -385,13 +413,34 @@ def publish_job():
     csvwriter.writerow(keys)
     csvwriter.writerow(values)
 
-  # mk subdir of id
-
-  # if status is ckpt, copy dmtcp files to subdir id
-
-  # if status is finished, copy product to subdir id
+  # mk subdir of id (key2)
+  subdir2 = os.path.join('/home/ops/data/', key2)
+  if not os.path.isdir(subdir2):
+    os.mkdir(subdir2)
 
   dict1 = {'mesg':'job published with status={}'.format(status)}
+
+  # if status is ckpt, copy dmtcp restart script to subdir id
+  if status == 'ckpt':
+    # copy dmtcp restart script to subdir id
+    shutil.copyfile(os.path.join(subdir1, 'dmtcp_restart_script.sh'), os.path.join(subdir2, 'dmtcp_restart_script.sh'))
+    print('copied {0} to {1}'.format(os.path.join(subdir1, 'dmtcp_restart_script.sh'), os.path.join(subdir2, 'dmtcp_restart_script.sh')))
+
+    # parse restart script and copy dmtcp memory image file
+    parsed_ckpt_file = parse_script(os.path.join(subdir2, 'dmtcp_restart_script.sh'))
+    parsed_ckpt_file_basename = os.path.basename(parsed_ckpt_file)
+    if os.path.exists(os.path.join(subdir1, parsed_ckpt_file_basename)):
+      shutil.copyfile(os.path.join(subdir1, parsed_ckpt_file_basename), parsed_ckpt_file)
+      print('copied {0} to {1}'.format(parsed_ckpt_file_basename, parsed_ckpt_file))
+    else:
+      dict1 = {'error':'somehow restart script points to ckpt file {} that does not exist'.format(os.path.join(subdir1, parsed_ckpt_file_basename))}
+
+  elif status == 'finished':
+    # copy product to subdir id
+    print('subdir1: ', subdir1)
+    print('subdir2: ', subdir2)
+    ### copytree(subdir1, subdir2)
+
 
   executionEndTime = float(time.time())
   print ('****** publish_job() elapsed time: ', executionEndTime - executionStartTime)
@@ -428,21 +477,11 @@ def list_jobs():
   ### print('type(jsonArray): ', type(jsonArray))
   ### print('jsonArray[0]: ', jsonArray[0])
 
-  # check status with job_id
-  job_id = '2'
-  """
-  for key, value in jsonArray[0].items():
-    if job_id in key:
-      print('value: ', value)
-  """
-
-  print(jsonArray[0][job_id])
-
   executionEndTime = float(time.time())
   print ('****** list_jobs() elapsed time: ', executionEndTime - executionStartTime)
   logger.info('****** list_jobs() elapsed time: %s' % str(executionEndTime - executionStartTime))
 
-  return jsonify(jsonArray[0])
+  return jsonify(sorted(jsonArray[0].items()))
 
 
 
@@ -478,10 +517,14 @@ def get_job():
   ### print('jsonArray[0]: ', jsonArray[0])
 
   # check status with job_id
-  job_id = '2'
-
-  print(jsonArray[0][job_id])
-
+  if job_id != '':
+    dict1 = {job_id:jsonArray[0][job_id]}
+    print(jsonArray[0][job_id])
+  else:
+    for key, value in reversed(jsonArray[0].items()):
+      if value == 'ckpt':
+        print('id: {0}, value: {1}'.format(id, value))
+        dict1 = {key:value}
 
   # if status is 'ckpt'
   # copy dmtcp files to local
@@ -500,8 +543,7 @@ def get_job():
   print ('****** get_job() elapsed time: ', executionEndTime - executionStartTime)
   logger.info('****** get_job() elapsed time: %s' % str(executionEndTime - executionStartTime))
 
-  ### return jsonify(dict1)
-  return (jsonArray[0][job_id])
+  return jsonify(dict1)
 
 
 
