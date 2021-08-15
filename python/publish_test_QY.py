@@ -50,7 +50,7 @@ def swap_ips(src_ip, dst_ip):
 
 
 
-def main():
+def main(job_id):
     dataDir2='/home/ops/data/'
     dataDir4='/home/ops/data/'
     
@@ -92,6 +92,10 @@ def main():
         print ('end_time: ', end_time)
 
         ### dmtcp.hop2(src_ip, dst_ip, port)
+        dmtcp.publish(src_ip, dst_ip, port, 'ckpt', job_id)
+
+        sys.exit(0)
+
 
         # CrIS and VIIRS use epoch time since 1/1/1993 (1993TAI),
         # and unix epoch time is since 1/1/1970
@@ -132,8 +136,8 @@ def main():
         output_filename = 'IND_CrIS_VIIRSMOD_' + split1[0] + '.' + split1[1] + '.' + split1[3] + '.' + split1[5]
         print ('output_filename: ', output_filename)
 
-        if os.path.exists(os.path.join(outDir, output_filename)):
-          shutil.rmtree(os.path.join(outDir, output_filename))
+        if os.path.exists(outDir):
+          shutil.rmtree(outDir)
 
         os.makedirs(os.path.join(outDir, output_filename))
 
@@ -268,7 +272,7 @@ def main():
     with open(output_filepath3, 'w') as metf:
         json.dump(d2, metf, indent=2)
 
-    dmtcp.publish(dst_ip, src_ip, port+1, 'finished', outDir, job_id)
+    dmtcp.publish(src_ip, dst_ip, port+1, 'finished', outDir, job_id)
 
     print("started at: ", start_t)
     print("now at: ", float(time.time()))
@@ -295,17 +299,32 @@ if __name__ == '__main__':
 
     job_id = '9'
     ### dst_ip = 'http://higgs.jpl.nasa.gov:8080/'
+
+    # get job with id
     cmd = 'http://{0}/svc/get_job?id={1}'.format(dst_ip, job_id)
+
+    # get next job that is 'new' or 'ckpt'
+    cmd = 'http://{0}/svc/get_job'.format(dst_ip)
+
     print('cmd: ', cmd)
 
     x = requests.get(cmd)
-    ### print(x.text)
+    print(x.text)
     y = json.loads(x.text)
-    status = y[job_id]
+    ### status = y[job_id]
+
+    dict_pairs = y.items()
+    pairs_iterator = iter(dict_pairs)
+    first_pair = next(pairs_iterator)
+    print(type(first_pair))
+
+    job_id = first_pair[0]
+    print('job_id: ', job_id)
+    status = first_pair[1]
     print('status: ', status)
 
     if status == 'new':
-      main()
+      main(job_id)
 
 
 
