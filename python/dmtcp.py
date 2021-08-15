@@ -169,9 +169,9 @@ def hop(src_ip, dst_ip, port):
 
 
 
-def publish(src_ip, dst_ip, port, status, outDir, job_id):
+def publish(src_ip, dst_ip, port, status, job_id):
 
-  print("in publish, from {0} to {1} with status={2}".format(src_ip, dst_ip, status))
+  print("in publish, src_ip: {0}, dst_ip: {1} with status={2}".format(src_ip, dst_ip, status))
 
   if status == 'ckpt':
     # checkpoint
@@ -201,7 +201,7 @@ def publish(src_ip, dst_ip, port, status, outDir, job_id):
         shutil.copyfile(real_script, os.path.join(subdir1, 'dmtcp_restart_script.sh'))
         print('copied {0} to {1}/dmtcp_restart_script.sh'.format(real_script, subdir1))
 
-        restart_cmd = 'http://{0}/svc/publish_job?status={1}&dir={2}'.format(dst_ip, 'ckpt', subdir1)
+        restart_cmd = 'http://{0}/svc/publish_job?status={1}&dir={2}&id={3}'.format(dst_ip, 'ckpt', subdir1, job_id)
         print('restart_cmd: ', restart_cmd)
 
         x = requests.get(restart_cmd)
