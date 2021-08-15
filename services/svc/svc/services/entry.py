@@ -396,6 +396,7 @@ def publish_job():
     key2 = str(int(key1) + 1)
     print('next key: ', key2)
     jsonArray[0][key2] = status
+    job_id = key2
   else: # update the job status
     jsonArray[0][job_id] = status
     key2 = job_id
@@ -418,7 +419,7 @@ def publish_job():
   if not os.path.isdir(subdir2):
     os.mkdir(subdir2)
 
-  dict1 = {'mesg':'job published with status={}'.format(status)}
+  dict1 = {'mesg':'job {0} published with status={1}'.format(job_id, status)}
 
   # if status is ckpt, copy dmtcp restart script to subdir id
   if status == 'ckpt':
@@ -522,7 +523,7 @@ def get_job():
     print(jsonArray[0][job_id])
   else:
     for key, value in reversed(jsonArray[0].items()):
-      if value == 'ckpt':
+      if value == 'ckpt' or value == 'new':
         print('id: {0}, value: {1}'.format(id, value))
         dict1 = {key:value}
 
