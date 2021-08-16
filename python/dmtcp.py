@@ -13,6 +13,8 @@ import shlex
 import shutil
 import requests
 from datetime import datetime
+sys.path.append('/home/ops/navp/services/svc/svc/src/util')
+from utils import parse_script
 
 ckptRetVal = 0
 sessionList = []
@@ -168,6 +170,40 @@ def hop(src_ip, dst_ip, port):
 
 
 
+def restart(src_ip, dst_ip, port, job_id):
+  # get dmtcp_restart_script.sh from /home/ops/data/<id>
+  restart_script = 'dmtcp_restart_script.sh'
+  script_path = os.path.join('/home/ops/data', job_id, restart_script)
+
+  # parse dmtcp_restart_script.sh to get the full path of dmtcp files
+  parsed_ckpt_files = parse_script(script_path)
+
+  # copy the dmtcp files to where they belong
+  for ckpt_file in parsed_ckpt_files:
+    src_dir = os.path.join('/home/ops/data', job_id)
+    base_name = os.path.basename(ckpt_file)
+    src_path = os.path.join(src_dir, base_name)
+
+    print('src_path: ', src_path)
+    print('ckpt_file: ', ckpt_file)
+    shutil.copyfile(src_path, ckpt_file)
+
+    # run dmtcp_restart_script.sh
+    ### command_line = 'sh ' + script_path + ' --coord-port ' + str(int(port)+30) + ' --coord-host localhost'
+    command_line = 'sh ' + script_path
+    args = shlex.split(command_line)
+    print(args)
+    p = subprocess.Popen(args)
+    p.wait()
+
+    # print out subprocess output
+
+    # remove dmtcp files
+    os. remove(script_path)
+    os. remove(src_path)
+    os. remove(ckpt_file)
+
+
 
 def publish(src_ip, dst_ip, port, status, job_id):
 
@@ -188,8 +224,14 @@ def publish(src_ip, dst_ip, port, status, job_id):
         print('prefix: ', prefix)
 
         # copy dmtcp files to a subdir named by time
-        time_string = datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
-        subdir1 = os.path.join('/home/ops/data/', time_string)
+        ### time_string = datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
+        ### subdir1 = os.path.join('/home/ops/data/', time_string)
+        subdir1 = os.path.join('/home/ops/data/', job_id)
+        print('subdir1: ', subdir1)
+
+        if os.path.isdir(subdir1):
+          shutil.rmtree(subdir1)
+
         if not os.path.isdir(subdir1):
           os.mkdir(subdir1)
 
@@ -201,10 +243,16 @@ def publish(src_ip, dst_ip, port, status, job_id):
         shutil.copyfile(real_script, os.path.join(subdir1, 'dmtcp_restart_script.sh'))
         print('copied {0} to {1}/dmtcp_restart_script.sh'.format(real_script, subdir1))
 
-        restart_cmd = 'http://{0}/svc/publish_job?status={1}&dir={2}&id={3}'.format(dst_ip, 'ckpt', subdir1, job_id)
-        print('restart_cmd: ', restart_cmd)
+        parsed_ckpt_files = parse_script(os.path.join(subdir1, 'dmtcp_restart_script.sh'))
 
-        x = requests.get(restart_cmd)
+        for ckpt_file in parsed_ckpt_files:
+          ckpt_file_basename = os.path.basename(ckpt_file)
+          shutil.copyfile(ckpt_file, os.path.join(subdir1, ckpt_file_basename))
+
+        cmd = 'http://{0}/svc/publish_job?status={1}&id={2}'.format(dst_ip, 'ckpt', job_id)
+        print('cmd: ', cmd)
+
+        x = requests.get(cmd)
         print(x.text)
 
         ### sys.exit(0)
