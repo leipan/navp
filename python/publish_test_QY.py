@@ -94,7 +94,7 @@ def main(job_id):
         ### dmtcp.hop2(src_ip, dst_ip, port)
         dmtcp.publish(src_ip, dst_ip, port, 'ckpt', job_id)
 
-        sys.exit(0)
+        ### sys.exit(0)
 
 
         # CrIS and VIIRS use epoch time since 1/1/1993 (1993TAI),
@@ -102,6 +102,9 @@ def main(job_id):
         # there is a 23 year difference
         diff = (datetime(1993,1,1,0,0) - datetime(1970,1,1)).total_seconds()
         print('diff: ', diff)
+
+        time.sleep(15)
+
         start_time += diff
         end_time += diff
 
@@ -136,10 +139,16 @@ def main(job_id):
         output_filename = 'IND_CrIS_VIIRSMOD_' + split1[0] + '.' + split1[1] + '.' + split1[3] + '.' + split1[5]
         print ('output_filename: ', output_filename)
 
+        """
         if os.path.exists(outDir):
           shutil.rmtree(outDir)
+        """
 
-        os.makedirs(os.path.join(outDir, output_filename))
+        output_dir = os.path.join(outDir, output_filename)
+        print('output_dir: ', output_dir)
+        if not os.path.isdir(output_dir):
+          print('makedirs ... {}'.format(output_dir))
+          os.makedirs(output_dir)
 
         # compute CrIS Pos Vector in EFEC on the Earth Surface 
         cris_pos= np.zeros(np.append(cris_lat.shape, 3))
@@ -272,7 +281,7 @@ def main(job_id):
     with open(output_filepath3, 'w') as metf:
         json.dump(d2, metf, indent=2)
 
-    dmtcp.publish(src_ip, dst_ip, port+1, 'finished', outDir, job_id)
+    dmtcp.publish(src_ip, dst_ip, port+1, 'finished', job_id)
 
     print("started at: ", start_t)
     print("now at: ", float(time.time()))
@@ -288,9 +297,11 @@ if __name__ == '__main__':
     start_t = time.time()
     print ('current dir: ', os.getcwd())
 
+    """
     if not dmtcp.isEnabled:
       print('Run with dmtcp, like this: dmtcp_launch python %s'%__file__)
       sys.exit(-1)
+    """
 
     src_ip, dst_ip = get_ips()
     print('src_ip: ', src_ip)
@@ -324,7 +335,12 @@ if __name__ == '__main__':
     print('status: ', status)
 
     if status == 'new':
+      # run the app from beginning
       main(job_id)
+    elif status == 'ckpt':
+      # get restart script downloaded and
+      # restart the app from ckpt
+      dmtcp.restart(src_ip, dst_ip, str(port+1), job_id)
 
 
 
