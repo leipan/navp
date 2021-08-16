@@ -306,7 +306,7 @@ def hop():
   p = subprocess.Popen(args)
   p.wait()
 
-  ckpt_file = parse_script(os.path.join(prefix, script))
+  ckpt_file = parse_script(os.path.join(prefix, script))[0]
   logger.info('ckpt_file: {0}'.format(ckpt_file))
 
   command_line = 'scp leipan@' + src_ip + ':' + ckpt_file + ' ' + prefix + '.'
