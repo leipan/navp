@@ -134,6 +134,7 @@ def main(job_id):
         print ('split1: ', split1)
         # split1:  ['SNDR', 'SNPP', 'CRIS', '20150603T1836', 'm06', 'g187', 'L1B_NSR', 'std', 'v02_05', 'G', '180905023033', 'nc']
 
+        # set output dir to be under job_id subdir
         outDir='/home/ops/data/' + job_id
 
         output_filename = 'IND_CrIS_VIIRSMOD_' + split1[0] + '.' + split1[1] + '.' + split1[3] + '.' + split1[5]
