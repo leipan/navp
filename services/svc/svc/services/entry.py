@@ -366,8 +366,8 @@ def publish_job():
 
   status = request.args.get('status', '')
   print('status: ', status)
-  subdir1 = request.args.get('dir', '')
-  print('subdir1: ', subdir1)
+  ### subdir1 = request.args.get('dir', '')
+  ### print('subdir1: ', subdir1)
   job_id = request.args.get('id', '')
   print('job_id: ', job_id)
 
@@ -424,21 +424,20 @@ def publish_job():
   # if status is ckpt, copy dmtcp restart script to subdir id
   if status == 'ckpt':
     # copy dmtcp restart script to subdir id
-    shutil.copyfile(os.path.join(subdir1, 'dmtcp_restart_script.sh'), os.path.join(subdir2, 'dmtcp_restart_script.sh'))
-    print('copied {0} to {1}'.format(os.path.join(subdir1, 'dmtcp_restart_script.sh'), os.path.join(subdir2, 'dmtcp_restart_script.sh')))
+    ### shutil.copyfile(os.path.join(subdir1, 'dmtcp_restart_script.sh'), os.path.join(subdir2, 'dmtcp_restart_script.sh'))
+    ### print('copied {0} to {1}'.format(os.path.join(subdir1, 'dmtcp_restart_script.sh'), os.path.join(subdir2, 'dmtcp_restart_script.sh')))
 
     # parse restart script and copy dmtcp memory image file
-    parsed_ckpt_file = parse_script(os.path.join(subdir2, 'dmtcp_restart_script.sh'))
-    parsed_ckpt_file_basename = os.path.basename(parsed_ckpt_file)
-    if os.path.exists(os.path.join(subdir1, parsed_ckpt_file_basename)):
-      shutil.copyfile(os.path.join(subdir1, parsed_ckpt_file_basename), parsed_ckpt_file)
-      print('copied {0} to {1}'.format(parsed_ckpt_file_basename, parsed_ckpt_file))
-    else:
-      dict1 = {'error':'somehow restart script points to ckpt file {} that does not exist'.format(os.path.join(subdir1, parsed_ckpt_file_basename))}
+    ### parsed_ckpt_files = parse_script(os.path.join(subdir2, 'dmtcp_restart_script.sh'))
+    ### parsed_ckpt_file_basename = os.path.basename(parsed_ckpt_files[0])
+    ### if os.path.exists(os.path.join(subdir2, parsed_ckpt_file_basename)):
+      ### shutil.copyfile(os.path.join(subdir1, parsed_ckpt_file_basename), parsed_ckpt_file)
+      ### print('copied {0} to {1}'.format(parsed_ckpt_file_basename, parsed_ckpt_file))
+    print('check if dmtcp file exists in {}'.format(subdir2))
 
   elif status == 'finished':
     # copy product to subdir id
-    print('subdir1: ', subdir1)
+    ### print('subdir1: ', subdir1)
     print('subdir2: ', subdir2)
     ### copytree(subdir1, subdir2)
 
@@ -511,7 +510,7 @@ def get_job():
     #convert each csv row into python dict
     for row in csvReader: 
       #add this python dict to json array
-      print('row: ', row)
+      ### print('row: ', row)
       jsonArray.append(row)
 
   ### print('type(jsonArray): ', type(jsonArray))
@@ -524,7 +523,7 @@ def get_job():
   else:
     for key, value in reversed(jsonArray[0].items()):
       if value == 'ckpt' or value == 'new':
-        print('id: {0}, value: {1}'.format(id, value))
+        ### print('id: {0}, value: {1}'.format(id, value))
         dict1 = {key:value}
 
   # if status is 'ckpt'
