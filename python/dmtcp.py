@@ -187,6 +187,9 @@ def restart(src_ip, dst_ip, port, job_id):
     print('src_path: ', src_path)
     print('ckpt_file: ', ckpt_file)
     shutil.copyfile(src_path, ckpt_file)
+    print('copied {0} to {1}'.format(src_path, ckpt_file))
+    os.remove(src_path)
+    print('removed {0}'.format(src_path))
 
     # run dmtcp_restart_script.sh
     ### command_line = 'sh ' + script_path + ' --coord-port ' + str(int(port)+30) + ' --coord-host localhost'
@@ -197,11 +200,17 @@ def restart(src_ip, dst_ip, port, job_id):
     p.wait()
 
     # print out subprocess output
+    out, err = p.communicate()
+    print('out: ', out)
+    print('err: ', err)
 
     # remove dmtcp files
-    os. remove(script_path)
-    os. remove(src_path)
-    os. remove(ckpt_file)
+    if os.path.exists(script_path):
+      os.remove(script_path)
+    if os.path.exists(src_path):
+      os.remove(src_path)
+    if os.path.exists(ckpt_file):
+      os.remove(ckpt_file)
 
 
 
@@ -235,19 +244,31 @@ def publish(src_ip, dst_ip, port, status, job_id):
         if not os.path.isdir(subdir1):
           os.mkdir(subdir1)
 
+        """ parse the restart script first, and then copy the ckpt files (below)
         shutil.copyfile(fname, os.path.join(subdir1, ckpt_basename))
-        print('copied {0} to {1}'.format(fname, subdir1))
+        print('copied {0} to {1}'.format(fname, os.path.join(subdir1, ckpt_basename)))
+        os.remove(fname)
+        print('removed {0}'.format(fname))
+        """
 
         real_script = os.path.realpath('./dmtcp_restart_script.sh')
         print('real_script: ', real_script)
         shutil.copyfile(real_script, os.path.join(subdir1, 'dmtcp_restart_script.sh'))
         print('copied {0} to {1}/dmtcp_restart_script.sh'.format(real_script, subdir1))
+        if os.path.exists('./dmtcp_restart_script.sh'):
+          os.remove('./dmtcp_restart_script.sh')
+          print('removed {0}'.format('./dmtcp_restart_script.sh'))
+          os.remove(real_script)
+          print('removed {0}'.format(real_script))
 
         parsed_ckpt_files = parse_script(os.path.join(subdir1, 'dmtcp_restart_script.sh'))
 
         for ckpt_file in parsed_ckpt_files:
           ckpt_file_basename = os.path.basename(ckpt_file)
           shutil.copyfile(ckpt_file, os.path.join(subdir1, ckpt_file_basename))
+          print('copied {0} to {1}'.format(ckpt_file, os.path.join(subdir1, ckpt_file_basename)))
+          os.remove(ckpt_file)
+          print('removed {0}'.format(ckpt_file))
 
         cmd = 'http://{0}/svc/publish_job?status={1}&id={2}'.format(dst_ip, 'ckpt', job_id)
         print('cmd: ', cmd)
@@ -268,8 +289,27 @@ def publish(src_ip, dst_ip, port, status, job_id):
 
     x = requests.get(restart_cmd)
     print(x.text)
-    
 
+    # remove the dmtcp files if there
+    for file1 in glob.glob(os.path.join('/home/ops/data/', str(job_id), '*')):
+      ### print('file1: ', file1)
+      if 'dmtcp_' in file1 and '.sh' in file1:
+        parsed_ckpt_files = parse_script(file1)
+
+        for ckpt_file in parsed_ckpt_files:
+          if os.path.exists(ckpt_file):
+            os.remove(ckpt_file)
+            print('removed {0}'.format(ckpt_file))
+
+        os.remove(file1)
+        print('dmtcp restart shell script: {} removed'.format(file1))
+
+      if 'ckpt_' in file1 and '.dmtcp' in file1:
+        os.remove(file1)
+        print('dmtcp file: {} removed'.format(file1))
+
+
+# end of publish()
 
 
 
@@ -301,11 +341,15 @@ def hop2(src_ip, dst_ip, port):
         if prefix != '/home/ops/data/':
           shutil.copyfile(fname, os.path.join('/home/ops/data/', ckpt_basename))
           print('copied {} to /home/ops/data/'.format(fname))
+          os.remove(fname)
+          print('removed {0}'.format(fname))
 
         real_script = os.path.realpath('./dmtcp_restart_script.sh')
         print('real_script: ', real_script)
         shutil.copyfile(real_script, os.path.join('/home/ops/data/', 'dmtcp_restart_script.sh'))
         print('copied {} to /home/ops/data/dmtcp_restart_script.sh'.format(real_script))
+        os.remove(real_script)
+        print('removed {0}'.format(real_script))
 
         # call service hop2()
         ### restart_cmd = 'curl "http://{0}/svc/hop2?port={1}&ckpt={2}" '.format(dst_ip, port, ckpt_basename)
