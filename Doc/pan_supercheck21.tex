@@ -1,0 +1,89 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+% The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{soul}
+\usepackage{flushend}
+% \usepackage[aboveskip=0pt,font=small]{caption}
+
+% personal commands
+\newcommand{\comment}[1]{{\color{red}\textit{#1}}}
+\newcommand{\TODO}[1]{{\color{blue}\textit{#1}}}
+% \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+%     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+\begin{document}
+
+\title{Transparent C/R for Navigational Programming and Fault Tolerance in Science Data Systems}
+
+% Commenting out for the double blind submission
+% \author{\IEEEauthorblockN{Twinkle Jain}
+% \IEEEauthorblockA{\textit{Northeastern University} \\
+% % Boston, USA\\
+% jain.t@northeastern.edu}
+% \and
+\author{Lei Pan and Twinkle Jain}
+
+\maketitle
+
+\begin{abstract}
+We apply checkpointing to science data systems. With program state migration, we enable Navigational Programming and fault tolerance. This paper describes high level designs and initial implementations.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Navigational Programming (NavP), fault-tolerant computing (FTC), DMTCP, science data systems (SDS)
+\end{IEEEkeywords}
+\vspace{-2.2mm}
+\section{Introduction}
+\label{sec:introduction}
+In the currently available science data systems (SDS), there are two problems that are not properly addressed: (1) Long running tasks are not readily breakable into smaller ones to leverage the Amazon EC2 Spot market, which provides steep discounts; and (2) Only embarrassingly parallel algorithms (e.g., MapReduce) are easily programmable. Furthermore, scientist programmers cannot deploy their apps without the help from SDS experts.
+
+We will leverage checkpointing and restart (C/R) to enable Navigational Programming (NavP) and achieve fault-tolerant computing (FTC) to facilitate high performance, effective resource leveraging, and ease of use for scientist programmers.
+
+\section{FTC, NavP, and DMTCP}
+\label{sec:s1}
+We introduce several concepts involved in this paper.
+\cite{ansel2009dmtcp}
+
+\subsection{FTC in the Cloud}
+\label{subsec:s11}
+
+Amazon provides EC2 Spot Instances, which are spare compute capacity in the AWS Cloud available at steep discounts (90\% savings) but they can be taken away at any time. In the meanwhile each atomic task can take hours to finish. Our strategy is to break the original tasks into smaller pieces using checkpointing and introduce FTC, so the ``remaining'' computation can be brought to and restarted on a new instance after the old instance disappears.
+
+\subsection{NavP}
+\label{subsec:s12}
+
+The distributed parallel system is not directly programmable by scientist programmers. One would always have to work with an SDS expert in virtualizing and deploying the app level programs, even between version updates. The levels of abstractions for different concerns, algorithm vs. details of distribution, are mixed, and therefore unnecessary burdens are put on the app developers’ shoulders. For applications that are not by nature embarrassingly parallel, this task is extremely difficult if not impossible. NavP was introduced to address these difficulties [1]. A new view of distributed programming, namely the Lagrangian view is introduced. In this view, the description of a computation follows its locus. This is done by inserting  hop() statements in the sequential code.
+
+\section{The NavP Bridging Services (NBS) and its application to NavP and FTC}
+\label{sec:s2}
+\cite{ansel2009dmtcp}
+
+\subsection{The NavP Bridging Services (NBS)}
+\label{subsec:s21}
+test
+\subsection{NBS to enable NavP}
+\label{subsec:s22}
+test
+\section{Lessons Learned:  }
+DMTCP\label{sec:lessons-learned}
+
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+
+\section*{Acknowledgments}
+\TODO{Normally, acknowledgments are omitted in the double-blind phase.}
+
+\IEEEtriggeratref{6}
+\bibliographystyle{IEEEtran}
+\bibliography{supercheck-sc}
+
+\end{document}
+
