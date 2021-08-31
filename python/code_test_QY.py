@@ -164,7 +164,8 @@ if True:
         split1 = cris_geo_file.split('.')
         print ('split1: ', split1)
         # split1:  ['SNDR', 'SNPP', 'CRIS', '20150603T1836', 'm06', 'g187', 'L1B_NSR', 'std', 'v02_05', 'G', '180905023033', 'nc']
-        outDir='/home/ops/data/'
+        ### outDir='/home/ops/data/'
+        outDir='./'
         output_filename = 'IND_CrIS_VIIRSMOD_' + split1[0] + '.' + split1[1] + '.' + split1[3] + '.' + split1[5]
         print ('output_filename: ', output_filename)
 
