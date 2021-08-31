@@ -50,7 +50,7 @@ print ('current dir: ', os.getcwd())
 
 if not dmtcp.isEnabled:
   print('Run with dmtcp, like this: dmtcp_launch python %s'%__file__)
-  sys.exit(-1)
+  ### sys.exit(-1)
 
 src_ip, dst_ip = get_ips()
 print('src_ip: ', src_ip)
@@ -70,11 +70,14 @@ if True:
     ### dataDir2='./'
     # this script is run from navp/python/
     # and the input/output are placed in /home/ops/data/ in the docker container
-    dataDir2='/home/ops/data/'
+    ### dataDir2='/home/ops/data/'
+    dataDir2='./'
+
     ### dataDir4='/raid15/qyue/VIIRS/VIIRS/201501/'
     ### dataDir4='/raid15/qyue/VIIRS/VIIRS/201501/VNP03MOD/'
     ### dataDir4='./'
-    dataDir4='/home/ops/data/'
+    ### dataDir4='/home/ops/data/'
+    dataDir4='./'
     
     ### for iloop in range(0,239,10):
     ### for iloop in range(0,9,10):
@@ -127,8 +130,6 @@ if True:
 
         print ('start_time: ', start_time)
         print ('end_time: ', end_time)
-
-        dmtcp.hop2(src_ip, dst_ip, port)
 
         # CrIS and VIIRS use epoch time since 1/1/1993 (1993TAI),
         # and unix epoch time is since 1/1/1970
@@ -206,8 +207,6 @@ if True:
 
 #remove the sdrqa, but adding time requirement (less than 600S difference)
         dy, dx = geo_QY.match_cris_viirs_QY(cris_los, cris_pos, viirs_pos, cris_time, viirs_time)
-
-        dmtcp.hop2(dst_ip, src_ip, port+1)
 
         ### print ('dy: ', dy)
         print ('dy.shape: ', dy.shape)
