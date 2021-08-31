@@ -48,7 +48,6 @@ We will leverage checkpointing and restart (C/R) to enable Navigational Programm
 \section{FTC, NavP, and DMTCP}
 \label{sec:s1}
 We introduce several concepts involved in this paper.
-\cite{ansel2009dmtcp}
 
 \subsection{FTC in the Cloud}
 \label{subsec:s11}
@@ -58,15 +57,24 @@ Amazon provides EC2 Spot Instances, which are spare compute capacity in the AWS 
 \subsection{NavP}
 \label{subsec:s12}
 
-The distributed parallel system is not directly programmable by scientist programmers. One would always have to work with an SDS expert in virtualizing and deploying the app level programs, even between version updates. The levels of abstractions for different concerns, algorithm vs. details of distribution, are mixed, and therefore unnecessary burdens are put on the app developers’ shoulders. For applications that are not by nature embarrassingly parallel, this task is extremely difficult if not impossible. NavP was introduced to address these difficulties [1]. A new view of distributed programming, namely the Lagrangian view is introduced. In this view, the description of a computation follows its locus. This is done by inserting  hop() statements in the sequential code.
+The distributed parallel system is not directly programmable by scientist programmers. One would always have to work with an SDS expert in virtualizing and deploying the app level programs, even between version updates. The levels of abstractions for different concerns, algorithm vs. details of distribution, are mixed, and therefore unnecessary burdens are put on the app developers’ shoulders. For applications that are not by nature embarrassingly parallel, this task is extremely difficult if not impossible. NavP was introduced to address these difficulties [1]. A new view of distributed programming, namely the NavP view is introduced. In this view, the description of a computation follows its locus. This is done by inserting  hop() statements in the original sequential code. A hop(dest) statement pauses the computation, collects all the program/thread state, migrates to the dest node, and resumes computation.
 
-\section{The NavP Bridging Services (NBS) and its application to NavP and FTC}
+\subsection{DMTCP}
+\label{subsec:s13}
+
+We will leverage the DMTCP system (Distributed MultiThreaded CheckPointing)~\cite{ansel2009dmtcp}. DMTCP transparently checkpoints computations in user space. It saves a copy of the program state to disk (called a checkpoint memory image (CMI)) and resumes the process later wherever the CMI goes. It requires no modifications to user application code nor to the OS kernel.
+
+The next section describes how to enable hop() and FTC using dmtcp plugins and web services to move program state.
+
+
+\section{The NavP Bridging Services (NBS) to enable NavP and FTC}
 \label{sec:s2}
-\cite{ansel2009dmtcp}
 
 \subsection{The NavP Bridging Services (NBS)}
 \label{subsec:s21}
-test
+
+The DMTCP plugins provide a flexible way to introduce add-on behaviors around DMTCP events. They wrap custom code around DMTCP calls. The NavP Bridging Services (NBS) run on each and every compute node and serve the client requests from the app processes. For example, an app process running on Host A can call a dmtcp.hop(B) plugin, which in turn calls DMTCP checkpoint() generating the CMI as well as the DMTCP restart script, and then call the svc/hop service running on Host B before it terminates itself. The hop service on Host B in turn copies the CMI and restart script from Host A to B, and runs the restart script to resume the computation. This is how process migration is implemented.
+
 \subsection{NBS to enable NavP}
 \label{subsec:s22}
 test
