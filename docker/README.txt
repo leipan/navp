@@ -20,9 +20,6 @@
 
   docker run --security-opt seccomp=unconfined --network=host -v /home/leipan/projects/aria_esi/wvcc/pge/data/collocation_output_1granule/test2:/home/ops/data:rw -ti leipan/dmtcp:latest /bin/bash
 
-  . if no input data is needed
-  docker run --security-opt seccomp=unconfined --network=host -ti leipan/dmtcp:latest /bin/bash
-
   (-v $host_dir:$guest_dir maps the host disk volume into the container)
 
   (place the 4 .nc files under $host_dir)
