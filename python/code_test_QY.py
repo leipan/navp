@@ -70,14 +70,12 @@ if True:
     ### dataDir2='./'
     # this script is run from navp/python/
     # and the input/output are placed in /home/ops/data/ in the docker container
-    ### dataDir2='/home/ops/data/'
-    dataDir2='./'
+    dataDir2='/home/ops/data/'
 
     ### dataDir4='/raid15/qyue/VIIRS/VIIRS/201501/'
     ### dataDir4='/raid15/qyue/VIIRS/VIIRS/201501/VNP03MOD/'
     ### dataDir4='./'
-    ### dataDir4='/home/ops/data/'
-    dataDir4='./'
+    dataDir4='/home/ops/data/'
     
     ### for iloop in range(0,239,10):
     ### for iloop in range(0,9,10):
@@ -164,8 +162,7 @@ if True:
         split1 = cris_geo_file.split('.')
         print ('split1: ', split1)
         # split1:  ['SNDR', 'SNPP', 'CRIS', '20150603T1836', 'm06', 'g187', 'L1B_NSR', 'std', 'v02_05', 'G', '180905023033', 'nc']
-        ### outDir='/home/ops/data/'
-        outDir='./'
+        outDir='/home/ops/data/'
         output_filename = 'IND_CrIS_VIIRSMOD_' + split1[0] + '.' + split1[1] + '.' + split1[3] + '.' + split1[5]
         print ('output_filename: ', output_filename)
 
