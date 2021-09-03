@@ -526,19 +526,6 @@ def get_job():
         ### print('id: {0}, value: {1}'.format(id, value))
         dict1 = {key:value}
 
-  # if status is 'ckpt'
-  # copy dmtcp files to local
-
-  # restart job
-
-
-  # if status is 'new'
-
-  # start job
-
-  # publish products
-
-
   executionEndTime = float(time.time())
   print ('****** get_job() elapsed time: ', executionEndTime - executionStartTime)
   logger.info('****** get_job() elapsed time: %s' % str(executionEndTime - executionStartTime))
