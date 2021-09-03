@@ -77,9 +77,24 @@ The DMTCP plugins provide a flexible way to introduce add-on behaviors around DM
 
 \subsection{NBS to enable NavP}
 \label{subsec:s22}
-test
-\section{Lessons Learned:  }
-DMTCP\label{sec:lessons-learned}
+
+We use a plugin named $\mathtt{dmtcp.hop(dest)}$ and a service named $\mathtt{svc/hop}$ to enable NavP. 
+Pseudocode for $\mathtt{dmtcp.hop()}$ in Figure~\ref{code:dmtcp_hop}, in which S3 means some shared disk volume either 
+in an S3 bucket or bound to the containers.
+
+\begin{figure}[!ht]
+\vspace{0.3in}
+\begin{center}
+%%% \begin{minipage}{1.5in}
+\begin{center}
+\mbox{\input{code_dmtcp_hop.tex}}\\[0.3em]
+\end{center}
+%%% \end{minipage}%
+\hspace{\fill}%
+\caption{Pseudocode for the dmtcp.hop() plugin.}
+\label{code:dmtcp_hop}
+\end{center}
+\end{figure}
 
 
 \section{Conclusion}
