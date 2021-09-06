@@ -1,0 +1,18 @@
+\def\baselinestretch{1}
+%%\fbox{\small%
+\fbox{\footnotesize%
+\parbox{0.2in}{\tt
+\begin{tabbing}
+\hspace*{0.2ex}\=xxxxx\=xx\=xx\=xx\=xx\=\+\kill
+%
+(1)\>$\mathtt {if\ status == ``ckpt":}$\\
+(2)\>$\mathtt {\ \ checkpoint()}$\\
+(3)\>$\mathtt {\ \ if\ isResume(): \#\ after\ checkpointing}$\\
+(3)\>$\mathtt {\ \ \ copy\ CMI\ and\ restart\ script\ to\ S3\ }$\\
+(4)\>$\mathtt {\ \ \ request\ svc/publish(``ckpt")\ to\ job\ scheduler\ }$\\
+(5)\>$\mathtt {elseif\ status == ``finished":}$\\
+(3)\>$\mathtt {\ \ \ copy\ product\ to\ S3\ }$\\
+(4)\>$\mathtt {\ \ \ request\ svc/publish(``finished")\ to\ job\ scheduler}$
+\end{tabbing}
+}}
+%\end{center}
