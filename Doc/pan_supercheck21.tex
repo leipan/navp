@@ -68,7 +68,7 @@ The distributed parallel system is not directly programmable by scientist progra
 
 We will leverage the DMTCP system (Distributed MultiThreaded CheckPointing)~\cite{ansel2009dmtcp}. DMTCP transparently checkpoints computations in user space. It saves a copy of the program state to disk (called a checkpoint memory image (CMI)) and resumes the process later wherever the CMI migrates. It requires no modifications to user application code nor to the OS kernel.
 
-The next section describes how to enable $\mathtt{hop()}$ and FTC using dmtcp plugins and web services to move program state.
+The next section describes how to enable $\mathtt{hop()}$ and FTC using DMTCP plugins and web services to move program state.
 
 
 \section{The NavP Bridging Services (NBS) to enable NavP and FTC}
