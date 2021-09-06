@@ -137,7 +137,7 @@ We implement three services in NBS to handle jobs:~\textbf{(1)} $\mathtt{svc/lis
 \end{center}
 \end{figure}
 
-\textbf{(2)} $\mathtt{svc/get\_job}$: it returns the status of a job given its $\mathtt{job\_id}$, or the next job that is not finished when no job\_id is provided; and~\textbf{(3)} $\mathtt{svc/publish\_job}$: it publishes jobs with two possible statuses: ``ckpt,'' in which case the CMI and restart script are uploaded, and ``finished,'' in which case the final product is uploaded.
+\textbf{(2)} $\mathtt{svc/get\_job}$: it returns the status of a job given its $\mathtt{job\_id}$, or the next job that is not finished when no $\mathtt{job\_id}$ is provided; and~\textbf{(3)} $\mathtt{svc/publish\_job}$: it publishes jobs with two possible statuses: ``ckpt,'' in which case the CMI and restart script are uploaded, and ``finished,'' in which case the final product is uploaded.
 
 A plugin is implemented, $\mathtt{dmtcp.publish(dest, status)}$, which is similar to the $\mathtt{dmtcp.hop(dest)}$ plugin. An app uses the $\mathtt{dmtcp.publish()}$ plugin (listed in Fig~ref{code:dmtcp-publish}) to publish with two possible statuses: ``ckpt'' (checkpoints and calls $\mathtt{svc/publish\_job}$ service with a ``ckpt'' status) or ``finished'' (calls $\mathtt{svc/publish\_job}$ with a ``finished'' status).
 
