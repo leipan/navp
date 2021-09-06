@@ -22,12 +22,16 @@
 \title{Transparent C/R for Navigational Programming and Fault Tolerance in Science Data Systems}
 
 % Commenting out for the double blind submission
-% \author{\IEEEauthorblockN{Twinkle Jain}
-% \IEEEauthorblockA{\textit{Northeastern University} \\
-% % Boston, USA\\
-% jain.t@northeastern.edu}
-% \and
-\author{Lei Pan and Twinkle Jain}
+
+\author{\IEEEauthorblockN{Lei Pan}
+\IEEEauthorblockA{\textit{Jet Propulsion Laboratory}} \\
+Pasadena, USA\\
+lei.pan@jpl.nasa.gov\\
+\and
+\IEEEauthorblockN{Twinkle Jain}
+\IEEEauthorblockA{\textit{Northeastern University}} \\
+Boston, USA\\
+jain.t@northeastern.edu}
 
 \maketitle
 
@@ -57,7 +61,7 @@ Amazon provides EC2 Spot Instances, which are spare compute capacity in the AWS 
 \subsection{NavP}
 \label{subsec:s12}
 
-The distributed parallel system is not directly programmable by scientist programmers. One would always have to work with an SDS expert in virtualizing and deploying the app level programs, even between version updates. The levels of abstractions for different concerns, algorithm vs. details of distribution, are mixed, and therefore unnecessary burdens are put on the app developers’ shoulders. For applications that are not by nature embarrassingly parallel, this task is extremely difficult if not impossible. NavP was introduced to address these difficulties [1]. A new view of distributed programming, namely the NavP view is introduced. In this view, the description of a computation follows its locus. This is done by inserting  hop() statements in the original sequential code. A hop(dest) statement pauses the computation, collects all the program/thread state, migrates to the dest node, and resumes computation.
+The distributed parallel system is not directly programmable by scientist programmers. One would always have to work with an SDS expert in virtualizing and deploying the app level programs, even between version updates. The levels of abstractions for different concerns, algorithm vs. details of distribution, are mixed, and therefore unnecessary burdens are put on the app developers’ shoulders. For applications that are not by nature embarrassingly parallel, this task is extremely difficult if not impossible. NavP was introduced to address these difficulties~\cite{pan2004navp}. A new view of distributed programming, namely the NavP view is introduced. In this view, the description of a computation follows its locus. This is done by inserting  hop() statements in the original sequential code. A hop(dest) statement pauses the computation, collects all the program/thread state, migrates to the dest node, and resumes computation.
 
 \subsection{DMTCP}
 \label{subsec:s13}
@@ -73,7 +77,7 @@ The next section describes how to enable hop() and FTC using dmtcp plugins and w
 \subsection{The NavP Bridging Services (NBS)}
 \label{subsec:s21}
 
-The DMTCP plugins provide a flexible way to introduce add-on behaviors around DMTCP events. They wrap custom code around DMTCP calls. The NavP Bridging Services (NBS) run on each and every compute node and serve the client requests from the app processes. For example, an app process running on Host A can call a dmtcp.hop(B) plugin, which in turn calls DMTCP checkpoint() generating the CMI as well as the DMTCP restart script, and then call the svc/hop service running on Host B before it terminates itself. The hop service on Host B in turn copies the CMI and restart script from Host A to B, and runs the restart script to resume the computation. This is how process migration is implemented.
+The DMTCP plugins provide a flexible way to introduce add-on behaviors around DMTCP events~\cite{ansel2009dmtcp}. They wrap custom code around DMTCP calls. The NavP Bridging Services (NBS) run on each and every compute node and serve the client requests from the app processes. For example, an app process running on Host A can call a dmtcp.hop(B) plugin, which in turn calls DMTCP checkpoint() generating the CMI as well as the DMTCP restart script, and then call the svc/hop service running on Host B before it terminates itself. The hop service on Host B in turn copies the CMI and restart script from Host A to B, and runs the restart script to resume the computation. This is how process migration is implemented.
 
 \subsection{NBS to enable NavP}
 \label{subsec:s22}
@@ -97,12 +101,65 @@ in an S3 bucket or bound to the containers.
 \end{figure}
 
 
+\begin{figure}[!ht]
+\vspace{0.3in}
+\begin{center}
+%%% \begin{minipage}{1.5in}
+\begin{center}
+\mbox{\input{code_hop_service.tex}}\\[0.3em]
+\end{center}
+%%% \end{minipage}%
+\hspace{\fill}%
+\caption{Pseudocode for the svc/hop service.}
+\label{code:svc_hop}
+\end{center}
+\end{figure}
+
+
+\subsection{NBS to enable FTC in SDS}
+\label{subsec:s23}
+
+When jobs in SDS are treated as atomic operations, they can be either ``new'' before the run, or ``finished'' after the run. Any interrupted jobs return to the ``new'' status. A new job has input datasets, and a finished job has products. For sake of discussion, we ignore more sophisticated situations, such as a ``running'' status, in which a job can have both input datasets and partial products. These additional combinations can be handled in real life applications with the same principle.
+
+We implement three services in NBS to handle jobs:  (1) $\mathtt{svc/list\_jobs}$: it returns all jobs with their job\_ids along with their statuses, such as those shown in Fig~\ref{code:jobs}:
+
+\begin{figure}[!ht]
+\vspace{0.3in}
+\begin{center}
+%%% \begin{minipage}{1.5in}
+\begin{center}
+\mbox{\input{code_jobs.tex}}\\[0.3em]
+\end{center}
+%%% \end{minipage}%
+\hspace{\fill}%
+\caption{Sample list of jobs.}
+\label{code:jobs}
+\end{center}
+\end{figure}
+
+(2) $\mathtt{svc/get\_job}$: it returns the status of a job given its job\_id, or the next job that is not finished when no job\_id is provided; and (3) $\mathtt{svc/publish\_job}$: it publishes jobs with two possible statuses: ``ckpt,'' in which case the CMI and restart script are uploaded, and “finished,” in which case the final product is uploaded.
+
+
+
+\begin{figure}[!ht]
+\vspace{0.3in}
+\begin{center}
+%%% \begin{minipage}{1.5in}
+\begin{center}
+\mbox{\input{code_app.tex}}\\[0.3em]
+\end{center}
+%%% \end{minipage}%
+\hspace{\fill}%
+\caption{Pseudocode for JPL real application of co-location.}
+\label{code:jobs}
+\end{center}
+\end{figure}
+
+
+
 \section{Conclusion}
 \label{sec:conclusion}
 
-
-\section*{Acknowledgments}
-\TODO{Normally, acknowledgments are omitted in the double-blind phase.}
 
 \IEEEtriggeratref{6}
 \bibliographystyle{IEEEtran}
