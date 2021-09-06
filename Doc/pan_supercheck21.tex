@@ -24,7 +24,7 @@
 % Commenting out for the double blind submission
 
 \author{\IEEEauthorblockN{Lei Pan}
-\IEEEauthorblockA{\textit{Jet Propulsion Laboratory}} \\
+\IEEEauthorblockA{\textit{Jet Propulsion Laboratory, California Institute of Technology}} \\
 Pasadena, USA\\
 lei.pan@jpl.nasa.gov\\
 \and
@@ -36,16 +36,16 @@ jain.t@northeastern.edu}
 \maketitle
 
 \begin{abstract}
-We apply checkpointing to science data systems. With program state migration, we enable Navigational Programming and fault tolerance. This paper describes high level designs and initial implementations.
+We apply checkpointing to science data systems. With program state migration facilitated by C/R, we enable Navigational Programming and fault tolerance. This paper describes high level designs and initial implementations.
 \end{abstract}
 
 \begin{IEEEkeywords}
-Navigational Programming (NavP), fault-tolerant computing (FTC), DMTCP, science data systems (SDS)
+C/R, DMTCP, NavP, FTC, SDS
 \end{IEEEkeywords}
 \vspace{-2.2mm}
 \section{Introduction}
 \label{sec:introduction}
-In the currently available science data systems (SDS), there are two problems that are not properly addressed: (1) Long running tasks are not readily breakable into smaller ones to leverage the Amazon EC2 Spot market, which provides steep discounts; and (2) Only embarrassingly parallel algorithms (e.g., MapReduce) are easily programmable. Furthermore, scientist programmers cannot deploy their apps without the help from SDS experts.
+In the currently available science data systems (SDS), there are two problems that are not properly addressed:~\textbf{(1)} Long running tasks are not readily breakable into smaller ones to leverage the Amazon EC2 Spot market, which provides steep discounts; and~\textbf{(2)} Only embarrassingly parallel algorithms (e.g., MapReduce) are easily programmable. Furthermore, scientist programmers cannot deploy their apps without the help from SDS experts.
 
 We will leverage checkpointing and restart (C/R) to enable Navigational Programming (NavP) and achieve fault-tolerant computing (FTC) to facilitate high performance, effective resource leveraging, and ease of use for scientist programmers.
 
@@ -61,14 +61,14 @@ Amazon provides EC2 Spot Instances, which are spare compute capacity in the AWS 
 \subsection{NavP}
 \label{subsec:s12}
 
-The distributed parallel system is not directly programmable by scientist programmers. One would always have to work with an SDS expert in virtualizing and deploying the app level programs, even between version updates. The levels of abstractions for different concerns, algorithm vs. details of distribution, are mixed, and therefore unnecessary burdens are put on the app developers’ shoulders. For applications that are not by nature embarrassingly parallel, this task is extremely difficult if not impossible. NavP was introduced to address these difficulties~\cite{pan2004navp}. A new view of distributed programming, namely the NavP view is introduced. In this view, the description of a computation follows its locus. This is done by inserting  hop() statements in the original sequential code. A hop(dest) statement pauses the computation, collects all the program/thread state, migrates to the dest node, and resumes computation.
+The distributed parallel system is not directly programmable by scientist programmers. One would always have to work with an SDS expert in virtualizing and deploying the app level programs, even between version updates. The levels of abstractions for different concerns, algorithm vs. details of distribution, are mixed, and therefore unnecessary burdens are put on the app developers’ shoulders. For applications that are not by nature embarrassingly parallel, this task is extremely difficult if not impossible. NavP was introduced to address these difficulties~\cite{pan2004navp}. A new view of distributed programming, namely the NavP view is introduced. In this view, the description of a computation follows its locus to where the large data is~\cite{pan_views_PDCS03}. This is done by inserting  $\mathtt{hop()}$ statements in the original sequential code. A $\mathtt{hop(dest)}$ statement pauses the computation, collects all the program/thread state, migrates to the $\mathtt{dest}$ node, and resumes computation.
 
 \subsection{DMTCP}
 \label{subsec:s13}
 
-We will leverage the DMTCP system (Distributed MultiThreaded CheckPointing)~\cite{ansel2009dmtcp}. DMTCP transparently checkpoints computations in user space. It saves a copy of the program state to disk (called a checkpoint memory image (CMI)) and resumes the process later wherever the CMI goes. It requires no modifications to user application code nor to the OS kernel.
+We will leverage the DMTCP system (Distributed MultiThreaded CheckPointing)~\cite{ansel2009dmtcp}. DMTCP transparently checkpoints computations in user space. It saves a copy of the program state to disk (called a checkpoint memory image (CMI)) and resumes the process later wherever the CMI migrates. It requires no modifications to user application code nor to the OS kernel.
 
-The next section describes how to enable hop() and FTC using dmtcp plugins and web services to move program state.
+The next section describes how to enable $\mathtt{hop()}$ and FTC using dmtcp plugins and web services to move program state.
 
 
 \section{The NavP Bridging Services (NBS) to enable NavP and FTC}
@@ -77,17 +77,17 @@ The next section describes how to enable hop() and FTC using dmtcp plugins and w
 \subsection{The NavP Bridging Services (NBS)}
 \label{subsec:s21}
 
-The DMTCP plugins provide a flexible way to introduce add-on behaviors around DMTCP events~\cite{ansel2009dmtcp}. They wrap custom code around DMTCP calls. The NavP Bridging Services (NBS) run on each and every compute node and serve the client requests from the app processes. For example, an app process running on Host A can call a dmtcp.hop(B) plugin, which in turn calls DMTCP checkpoint() generating the CMI as well as the DMTCP restart script, and then call the svc/hop service running on Host B before it terminates itself. The hop service on Host B in turn copies the CMI and restart script from Host A to B, and runs the restart script to resume the computation. This is how process migration is implemented.
+The DMTCP plugin~\cite{dmtcp-openproc-2013} provide a flexible way to introduce add-on behaviors around DMTCP events~\cite{ansel2009dmtcp}. They wrap custom code around DMTCP calls. The NavP Bridging Services (NBS) run on each and every compute node and serve the client requests from the app processes. For example, an app process running on $\mathtt{Host~A}$ can call a $\mathtt{dmtcp.hop(B)}$ plugin, which in turn calls DMTCP $\mathtt{checkpoint()}$ generating the CMI as well as the DMTCP restart script, and then call the $\mathtt{svc/hop}$ service running on $\mathtt{Host~B}$ before it terminates itself. The $\mathtt{svc/hop}$ service on $\mathtt{Host~B}$ in turn copies the CMI and restart script from $\mathtt{Host~A}$ to $\mathtt{B}$, and runs the restart script to resume the computation. This is how process migration is implemented.
 
 \subsection{NBS to enable NavP}
 \label{subsec:s22}
 
 We use a plugin named $\mathtt{dmtcp.hop(dest)}$ and a service named $\mathtt{svc/hop}$ to enable NavP. 
-Pseudocode for $\mathtt{dmtcp.hop()}$ in Figure~\ref{code:dmtcp_hop}, in which S3 means some shared disk volume either 
-in an S3 bucket or bound to the containers.
+Pseudocode for $\mathtt{dmtcp.hop(dest)}$ is in Fig~\ref{code:dmtcp_hop}, in which S3 means some shared disk volume either 
+in an S3 bucket or bound to the containers. Pseudocode for $\mathtt{svc/hop}$ is in Fig~\ref{code:svc_hop}.
 
 \begin{figure}[!ht]
-\vspace{0.3in}
+\vspace{0.1in}
 \begin{center}
 %%% \begin{minipage}{1.5in}
 \begin{center}
@@ -102,7 +102,7 @@ in an S3 bucket or bound to the containers.
 
 
 \begin{figure}[!ht]
-\vspace{0.3in}
+\vspace{0.1in}
 \begin{center}
 %%% \begin{minipage}{1.5in}
 \begin{center}
@@ -121,10 +121,10 @@ in an S3 bucket or bound to the containers.
 
 When jobs in SDS are treated as atomic operations, they can be either ``new'' before the run, or ``finished'' after the run. Any interrupted jobs return to the ``new'' status. A new job has input datasets, and a finished job has products. For sake of discussion, we ignore more sophisticated situations, such as a ``running'' status, in which a job can have both input datasets and partial products. These additional combinations can be handled in real life applications with the same principle.
 
-We implement three services in NBS to handle jobs:  (1) $\mathtt{svc/list\_jobs}$: it returns all jobs with their job\_ids along with their statuses, such as those shown in Fig~\ref{code:jobs}:
+We implement three services in NBS to handle jobs:~\textbf{(1)} $\mathtt{svc/list\_jobs}$: it returns all jobs with their $\mathtt{job\_ids}$ along with their statuses, such as those shown in Fig~\ref{code:jobs}:
 
 \begin{figure}[!ht]
-\vspace{0.3in}
+\vspace{0.1in}
 \begin{center}
 %%% \begin{minipage}{1.5in}
 \begin{center}
@@ -137,12 +137,30 @@ We implement three services in NBS to handle jobs:  (1) $\mathtt{svc/list\_jobs}
 \end{center}
 \end{figure}
 
-(2) $\mathtt{svc/get\_job}$: it returns the status of a job given its job\_id, or the next job that is not finished when no job\_id is provided; and (3) $\mathtt{svc/publish\_job}$: it publishes jobs with two possible statuses: ``ckpt,'' in which case the CMI and restart script are uploaded, and “finished,” in which case the final product is uploaded.
+\textbf{(2)} $\mathtt{svc/get\_job}$: it returns the status of a job given its $\mathtt{job\_id}$, or the next job that is not finished when no job\_id is provided; and~\textbf{(3)} $\mathtt{svc/publish\_job}$: it publishes jobs with two possible statuses: ``ckpt,'' in which case the CMI and restart script are uploaded, and ``finished,'' in which case the final product is uploaded.
 
+A plugin is implemented, $\mathtt{dmtcp.publish(dest, status)}$, which is similar to the $\mathtt{dmtcp.hop(dest)}$ plugin. An app uses the $\mathtt{dmtcp.publish()}$ plugin (listed in Fig~ref{code:dmtcp-publish}) to publish with two possible statuses: ``ckpt'' (checkpoints and calls $\mathtt{svc/publish\_job}$ service with a ``ckpt'' status) or ``finished'' (calls $\mathtt{svc/publish\_job}$ with a ``finished'' status).
 
 
 \begin{figure}[!ht]
-\vspace{0.3in}
+\vspace{0.1in}
+\begin{center}
+%%% \begin{minipage}{1.5in}
+\begin{center}
+\mbox{\input{code_dmtcp_publish.tex}}\\[0.3em]
+\end{center}
+%%% \end{minipage}%
+\hspace{\fill}%
+\caption{Pseudocode for dmtcp.publish() plugin.}
+\label{code:dmtcp-publish}
+\end{center}
+\end{figure}
+
+
+The test case application is the co-location of two satellite observation data. Specifically, the data from the instrument VIIRS (Visible Infrared Imaging Radiometer Suite) is mapped to the geometry of CrIS (Cross-track Infrared Sounder). In the pseudocode listed in Fig~\ref{code:app}, the calls to $\mathtt{svc/publish(``ckpt")}$ are where we checkpoint and the CMIs are published as ``partial products,'' so when the execution fails for any reason at anytime, restart will happen from the most-recent-checkpoint. The app programmer is thus in control of where and how frequently checkpoints happen. The last call to $\mathtt{svc/publish(``finished")}$ is when the real product is eventually published.
+
+\begin{figure}[!ht]
+\vspace{0.1in}
 \begin{center}
 %%% \begin{minipage}{1.5in}
 \begin{center}
@@ -151,7 +169,7 @@ We implement three services in NBS to handle jobs:  (1) $\mathtt{svc/list\_jobs}
 %%% \end{minipage}%
 \hspace{\fill}%
 \caption{Pseudocode for JPL real application of co-location.}
-\label{code:jobs}
+\label{code:app}
 \end{center}
 \end{figure}
 
@@ -160,6 +178,9 @@ We implement three services in NBS to handle jobs:  (1) $\mathtt{svc/list\_jobs}
 \section{Conclusion}
 \label{sec:conclusion}
 
+Deployment is dynamically done by inserting $\mathtt{dmtcp.hop()}$ statements in the app code, and therefore is done by the scientist app programmers ``at their leisure.'' This is unlike the current practice in which new code is deployed in the CI (constant integration) process where the SDS experts are usually involved.
+
+Performance studies and analysis will be published in a future full paper.
 
 \IEEEtriggeratref{6}
 \bibliographystyle{IEEEtran}
