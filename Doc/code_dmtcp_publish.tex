@@ -8,11 +8,11 @@
 (1)\>$\mathtt {if\ status == ``ckpt":}$\\
 (2)\>$\mathtt {\ \ checkpoint()}$\\
 (3)\>$\mathtt {\ \ if\ isResume(): \#\ after\ checkpointing}$\\
-(3)\>$\mathtt {\ \ \ copy\ CMI\ and\ restart\ script\ to\ S3\ }$\\
-(4)\>$\mathtt {\ \ \ request\ svc/publish(``ckpt")\ to\ job\ scheduler\ }$\\
-(5)\>$\mathtt {elseif\ status == ``finished":}$\\
-(3)\>$\mathtt {\ \ \ copy\ product\ to\ S3\ }$\\
-(4)\>$\mathtt {\ \ \ request\ svc/publish(``finished")\ to\ job\ scheduler}$
+(4)\>$\mathtt {\ \ \ copy\ CMI\ and\ restart\ script\ to\ S3\ }$\\
+(5)\>$\mathtt {\ \ \ request\ svc/publish(dest, ``ckpt")\ }$\\
+(6)\>$\mathtt {elseif\ status == ``finished":}$\\
+(7)\>$\mathtt {\ \ \ copy\ product\ to\ S3\ }$\\
+(8)\>$\mathtt {\ \ \ request\ svc/publish(dest, ``finished")\ }$
 \end{tabbing}
 }}
 %\end{center}
