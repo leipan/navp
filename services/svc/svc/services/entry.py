@@ -4,6 +4,7 @@ import urllib
 import http.client
 import json
 import re
+import csv
 
 import requests, time, json
 import shlex, subprocess
@@ -165,6 +166,43 @@ def hello():
          </a>.
          </p>
          </li>
+
+         <li> <b>(S3)</b> list jobs in job pool
+         <p>
+         <a href="{2}://{0}:{1}/svc/list_jobs?">
+         {2}://{0}:{1}/svc/list_jobs
+         </a>.
+         </p>
+         </li>
+
+         <li> <b>(S4)</b> get job with id, or if no id is provided, get next job that is 'new' or 'ckpt'
+         <p>
+         <a href="{2}://{0}:{1}/svc/get_job?id=9">
+         {2}://{0}:{1}/svc/get_job?id=9
+         </a>.
+         </p>
+         <p>
+         <a href="{2}://{0}:{1}/svc/get_job">
+         {2}://{0}:{1}/svc/get_job
+         </a>.
+         </p>
+         </li>
+
+         <li> <b>(S5)</b> publish job with id
+         <p>
+         <a href="{2}://{0}:{1}/svc/publish_job?id=1&status=finished&dir=/home/ops/data/IND_CrIS_VIIRSMOD_SNDR.SNPP.20150601T1548.g159/">
+         {2}://{0}:{1}/svc/publish_job?id=1&status=finished&dir=/home/ops/data/IND_CrIS_VIIRSMOD_SNDR.SNPP.20150601T1548.g159/
+         </a>.
+         </p>
+         <p>
+         <a href="{2}://{0}:{1}/svc/publish_job?id=2&status=ckpt">
+         {2}://{0}:{1}/svc/publish_job?id=2&status=ckpt
+         </a>.
+         </p>
+         </li>
+
+
+
          </ul>
 
          <br>
@@ -268,7 +306,7 @@ def hop():
   p = subprocess.Popen(args)
   p.wait()
 
-  ckpt_file = parse_script(os.path.join(prefix, script))
+  ckpt_file = parse_script(os.path.join(prefix, script))[0]
   logger.info('ckpt_file: {0}'.format(ckpt_file))
 
   command_line = 'scp leipan@' + src_ip + ':' + ckpt_file + ' ' + prefix + '.'
@@ -305,5 +343,265 @@ def hop():
 
   return jsonify(dict1)
 
+
+
+def copytree(src, dst, symlinks=False, ignore=None):
+  for item in os.listdir(src):
+    s = os.path.join(src, item)
+    d = os.path.join(dst, item)
+    if os.path.isdir(s):
+      shutil.copytree(s, d, symlinks, ignore)
+    else:
+      shutil.copy2(s, d)
+
+
+
+# ------------------------------------------------
+@app.route('/svc/publish_job', methods=["GET"])
+@crossdomain(origin='*')
+def publish_job():
+  """Run publish_job"""
+  logger.info('****** publish_job() starts.')
+  executionStartTime = int(time.time())
+
+  status = request.args.get('status', '')
+  print('status: ', status)
+  ### subdir1 = request.args.get('dir', '')
+  ### print('subdir1: ', subdir1)
+  job_id = request.args.get('id', '')
+  print('job_id: ', job_id)
+
+  jsonArray = []
+  # open jobs.csv and read
+      
+  # read csv file
+  csvFilePath = 'jobs.csv'
+  with open(csvFilePath, encoding='utf-8') as csvf: 
+    # load csv file data using csv library's dictionary reader
+    csvReader = csv.DictReader(csvf) 
+
+    # convert each csv row into python dict
+    for row in csvReader: 
+      # add this python dict to json array
+      print('row: ', row)
+      jsonArray.append(row)
+
+  ### print('type(jsonArray): ', type(jsonArray))
+  ### print('jsonArray[0]: ', jsonArray[0])
+
+  if job_id == '': # create a new job with status
+    # put status into next key of OrderedDict
+    key1 = next(reversed(jsonArray[0]))
+    print('recent key: ', key1)
+    key2 = str(int(key1) + 1)
+    print('next key: ', key2)
+    jsonArray[0][key2] = status
+    job_id = key2
+  else: # update the job status
+    jsonArray[0][job_id] = status
+    key2 = job_id
+
+  print(jsonArray[0])
+
+  # write new OrderedDict back to jobs.csv
+  keys, values = [], []
+  for key, value in jsonArray[0].items():
+    keys.append(key)
+    values.append(value)
+
+  with open(csvFilePath, "w") as outfile:
+    csvwriter = csv.writer(outfile)
+    csvwriter.writerow(keys)
+    csvwriter.writerow(values)
+
+  # mk subdir of id (key2)
+  subdir2 = os.path.join('/home/ops/data/', key2)
+  if not os.path.isdir(subdir2):
+    os.mkdir(subdir2)
+
+  dict1 = {'mesg':'job {0} published with status={1}'.format(job_id, status)}
+
+  # if status is ckpt, copy dmtcp restart script to subdir id
+  if status == 'ckpt':
+    # copy dmtcp restart script to subdir id
+    ### shutil.copyfile(os.path.join(subdir1, 'dmtcp_restart_script.sh'), os.path.join(subdir2, 'dmtcp_restart_script.sh'))
+    ### print('copied {0} to {1}'.format(os.path.join(subdir1, 'dmtcp_restart_script.sh'), os.path.join(subdir2, 'dmtcp_restart_script.sh')))
+
+    # parse restart script and copy dmtcp memory image file
+    ### parsed_ckpt_files = parse_script(os.path.join(subdir2, 'dmtcp_restart_script.sh'))
+    ### parsed_ckpt_file_basename = os.path.basename(parsed_ckpt_files[0])
+    ### if os.path.exists(os.path.join(subdir2, parsed_ckpt_file_basename)):
+      ### shutil.copyfile(os.path.join(subdir1, parsed_ckpt_file_basename), parsed_ckpt_file)
+      ### print('copied {0} to {1}'.format(parsed_ckpt_file_basename, parsed_ckpt_file))
+    print('check if dmtcp file exists in {}'.format(subdir2))
+
+  elif status == 'finished':
+    # copy product to subdir id
+    ### print('subdir1: ', subdir1)
+    print('subdir2: ', subdir2)
+    ### copytree(subdir1, subdir2)
+
+
+  executionEndTime = float(time.time())
+  print ('****** publish_job() elapsed time: ', executionEndTime - executionStartTime)
+  logger.info('****** publish_job() elapsed time: %s' % str(executionEndTime - executionStartTime))
+
+  return jsonify(dict1)
+
+
+
+
+# ------------------------------------------------
+@app.route('/svc/list_jobs', methods=["GET"])
+@crossdomain(origin='*')
+def list_jobs():
+  """Run list_jobs"""
+  logger.info('****** list_jobs() starts.')
+  executionStartTime = int(time.time())
+
+  jsonArray = []
+  # open jobs.csv and read
+      
+  #read csv file
+  csvFilePath = 'jobs.csv'
+  with open(csvFilePath, encoding='utf-8') as csvf: 
+    #load csv file data using csv library's dictionary reader
+    csvReader = csv.DictReader(csvf) 
+
+    #convert each csv row into python dict
+    for row in csvReader: 
+      #add this python dict to json array
+      print('row: ', row)
+      jsonArray.append(row)
+
+  ### print('type(jsonArray): ', type(jsonArray))
+  ### print('jsonArray[0]: ', jsonArray[0])
+
+  executionEndTime = float(time.time())
+  print ('****** list_jobs() elapsed time: ', executionEndTime - executionStartTime)
+  logger.info('****** list_jobs() elapsed time: %s' % str(executionEndTime - executionStartTime))
+
+  return jsonify(sorted(jsonArray[0].items()))
+
+
+
+
+
+
+
+# ------------------------------------------------
+@app.route('/svc/get_job', methods=["GET"])
+@crossdomain(origin='*')
+def get_job():
+  """Run get_job"""
+  logger.info('****** get_job() starts.')
+  executionStartTime = int(time.time())
+
+  # get job status with job_id
+  job_id = request.args.get('id', '')
+
+  #read csv file
+  jsonArray = []
+  csvFilePath = 'jobs.csv'
+  with open(csvFilePath, encoding='utf-8') as csvf: 
+    #load csv file data using csv library's dictionary reader
+    csvReader = csv.DictReader(csvf) 
+
+    #convert each csv row into python dict
+    for row in csvReader: 
+      #add this python dict to json array
+      ### print('row: ', row)
+      jsonArray.append(row)
+
+  ### print('type(jsonArray): ', type(jsonArray))
+  ### print('jsonArray[0]: ', jsonArray[0])
+
+  # check status with job_id
+  if job_id != '':
+    dict1 = {job_id:jsonArray[0][job_id]}
+    print(jsonArray[0][job_id])
+  else:
+    for key, value in reversed(jsonArray[0].items()):
+      if value == 'ckpt' or value == 'new':
+        ### print('id: {0}, value: {1}'.format(id, value))
+        dict1 = {key:value}
+
+  executionEndTime = float(time.time())
+  print ('****** get_job() elapsed time: ', executionEndTime - executionStartTime)
+  logger.info('****** get_job() elapsed time: %s' % str(executionEndTime - executionStartTime))
+
+  return jsonify(dict1)
+
+
+
+
+
+
+
+# ------------------------------------------------
+@app.route('/svc/hop2', methods=["GET"])
+@crossdomain(origin='*')
+def hop2():
+  """Run hop2"""
+  logger.info('****** hop2() starts.')
+  executionStartTime = int(time.time())
+
+  # assume script is under ~/data
+  # and the input is full path of the file
+  script = request.args.get('script', 'dmtcp_restart_script.sh')
+  print('script: ', script)
+  logger.info('script: {0}'.format(script))
+  port = request.args.get('port', '6869')
+  logger.info('port: {0}'.format(port))
+  print('port: ', port)
+  # assume ckpt_filepath is under ~/data
+  # and the input is full path of the dir
+  ckpt_file = request.args.get('ckpt', '')
+  print('ckpt_file: ', ckpt_file)
+  logger.info('ckpt_file: {0}'.format(ckpt_file))
+
+  # this service lives on the dst machine
+  # first copy dmtcp_restart_script.sh and the ckpt file from ./data to local (./)
+  script_path = os.path.join('/home/ops/data', script)
+  print('script_path: ', script_path)
+  parsed_ckpt_file = parse_script(script_path)
+  parsed_ckpt_file_basename = os.path.basename(parsed_ckpt_file)
+  # prefix is where the ckpt memory image is and is where the restart script is pointing at
+  prefix = parsed_ckpt_file.replace(parsed_ckpt_file_basename, '')
+  print('prefix: ', prefix)
+
+  print('ckpt_file: ', ckpt_file)
+  logger.info('ckpt_file: {0}'.format(ckpt_file))
+  print('parsed_ckpt_file: ', parsed_ckpt_file)
+  logger.info('parsed_ckpt_file: {0}'.format(parsed_ckpt_file))
+
+  if parsed_ckpt_file_basename == ckpt_file:
+
+    # copy dmtcp files from data/ to local dirs
+    shutil.copyfile(script_path, './dmtcp_restart_script.sh')
+    shutil.copyfile(os.path.join('/home/ops/data', parsed_ckpt_file_basename), os.path.join(prefix, parsed_ckpt_file_basename))
+
+    # then run dmtcp_restart_script.sh on dst_ip
+    ### command_line = '/home/leipan/projects/dmtcp/git/navp/services/svc/dmtcp_restart_script.sh --coord-port ' + port
+    print('port: ', port)
+    ### print('dst_ip: ', dst_ip)
+    ### command_line = 'dmtcp_restart_script.sh --coord-port ' + port + ' --coord-host ' + dst_ip
+    command_line = 'sh ./dmtcp_restart_script.sh --coord-port ' + port + ' --coord-host localhost'
+    print('command_line: ', command_line)
+
+    args = shlex.split(command_line)
+    print(args)
+    p = subprocess.Popen(args)
+    p.wait()
+
+    dict1 = {'mesg':'dmtcp_restart_script.sh called'}
+  else:
+    dict1 = {'error':'dmtcp_restart_script.sh is pointing at the wrong dmtcp memory image'}
+
+  executionEndTime = float(time.time())
+  print ('****** hop2() elapsed time: ', executionEndTime - executionStartTime)
+  logger.info('****** hop2() elapsed time: %s' % str(executionEndTime - executionStartTime))
+
+  return jsonify(dict1)
 
 

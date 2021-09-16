@@ -10,6 +10,11 @@ from ctypes import *
 import subprocess
 import time
 import shlex
+import shutil
+import requests
+from datetime import datetime
+sys.path.append('/home/ops/navp/services/svc/svc/src/util')
+from utils import parse_script
 
 ckptRetVal = 0
 sessionList = []
@@ -139,15 +144,13 @@ def hop(src_ip, dst_ip, port):
 
   ### fname = dmtcp.checkpointFilename()
   fname = checkpointFilename()
-  """
   if fname != '':
     print ('fname: ', fname)
-  """
 
   ### if dmtcp.isResume():
   if isResume():
     restart_cmd = \
-      'curl "http://{0}:8080/svc/hop?src_ip={1}&dst_ip={2}&port={3}&ckpt={4}" '.format(dst_ip, src_ip, dst_ip, port, fname)
+      'curl "http://{0}/svc/hop?src_ip={1}&dst_ip={2}&port={3}&ckpt={4}" '.format(dst_ip, src_ip, dst_ip, port, fname)
     ### print('restart_cmd: ', restart_cmd)
 
     args = shlex.split(restart_cmd)
@@ -163,6 +166,215 @@ def hop(src_ip, dst_ip, port):
     ### print("The process is restarting from a previous checkpoint.")
     pass
   return
+
+
+
+
+def restart(src_ip, dst_ip, port, job_id):
+  # get dmtcp_restart_script.sh from /home/ops/data/<id>
+  restart_script = 'dmtcp_restart_script.sh'
+  script_path = os.path.join('/home/ops/data', job_id, restart_script)
+
+  # parse dmtcp_restart_script.sh to get the full path of dmtcp files
+  parsed_ckpt_files = parse_script(script_path)
+
+  # copy the dmtcp files to where they belong
+  for ckpt_file in parsed_ckpt_files:
+    src_dir = os.path.join('/home/ops/data', job_id)
+    base_name = os.path.basename(ckpt_file)
+    src_path = os.path.join(src_dir, base_name)
+
+    print('src_path: ', src_path)
+    print('ckpt_file: ', ckpt_file)
+    shutil.copyfile(src_path, ckpt_file)
+    print('copied {0} to {1}'.format(src_path, ckpt_file))
+    os.remove(src_path)
+    print('removed {0}'.format(src_path))
+
+    # run dmtcp_restart_script.sh
+    ### command_line = 'sh ' + script_path + ' --coord-port ' + str(int(port)+30) + ' --coord-host localhost'
+    command_line = 'sh ' + script_path
+    args = shlex.split(command_line)
+    print(args)
+    p = subprocess.Popen(args)
+    p.wait()
+
+    # print out subprocess output
+    out, err = p.communicate()
+    print('out: ', out)
+    print('err: ', err)
+
+    # remove dmtcp files
+    if os.path.exists(script_path):
+      os.remove(script_path)
+    if os.path.exists(src_path):
+      os.remove(src_path)
+    if os.path.exists(ckpt_file):
+      os.remove(ckpt_file)
+
+
+
+def publish(src_ip, dst_ip, port, status, job_id):
+
+  print("in publish, src_ip: {0}, dst_ip: {1} with status={2}".format(src_ip, dst_ip, status))
+
+  if status == 'ckpt':
+    # checkpoint
+    checkpoint()
+    time.sleep(1)
+
+    if isResume():
+
+      fname = checkpointFilename()
+      if fname != '':
+        print ('fname: ', fname)
+        ckpt_basename = os.path.basename(fname)
+        prefix = fname.replace(ckpt_basename, '')
+        print('prefix: ', prefix)
+
+        # copy dmtcp files to a subdir named by time
+        ### time_string = datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
+        ### subdir1 = os.path.join('/home/ops/data/', time_string)
+        subdir1 = os.path.join('/home/ops/data/', job_id)
+        print('subdir1: ', subdir1)
+
+        if os.path.isdir(subdir1):
+          shutil.rmtree(subdir1)
+
+        if not os.path.isdir(subdir1):
+          os.mkdir(subdir1)
+
+        """ parse the restart script first, and then copy the ckpt files (below)
+        shutil.copyfile(fname, os.path.join(subdir1, ckpt_basename))
+        print('copied {0} to {1}'.format(fname, os.path.join(subdir1, ckpt_basename)))
+        os.remove(fname)
+        print('removed {0}'.format(fname))
+        """
+
+        real_script = os.path.realpath('./dmtcp_restart_script.sh')
+        print('real_script: ', real_script)
+        shutil.copyfile(real_script, os.path.join(subdir1, 'dmtcp_restart_script.sh'))
+        print('copied {0} to {1}/dmtcp_restart_script.sh'.format(real_script, subdir1))
+        if os.path.exists('./dmtcp_restart_script.sh'):
+          os.remove('./dmtcp_restart_script.sh')
+          print('removed {0}'.format('./dmtcp_restart_script.sh'))
+          os.remove(real_script)
+          print('removed {0}'.format(real_script))
+
+        parsed_ckpt_files = parse_script(os.path.join(subdir1, 'dmtcp_restart_script.sh'))
+
+        for ckpt_file in parsed_ckpt_files:
+          ckpt_file_basename = os.path.basename(ckpt_file)
+          shutil.copyfile(ckpt_file, os.path.join(subdir1, ckpt_file_basename))
+          print('copied {0} to {1}'.format(ckpt_file, os.path.join(subdir1, ckpt_file_basename)))
+          os.remove(ckpt_file)
+          print('removed {0}'.format(ckpt_file))
+
+        cmd = 'http://{0}/svc/publish_job?status={1}&id={2}'.format(dst_ip, 'ckpt', job_id)
+        print('cmd: ', cmd)
+
+        x = requests.get(cmd)
+        print(x.text)
+
+        ### sys.exit(0)
+
+      # call service publish_job with status and subdir name
+
+      # continue running the app
+  elif status == 'finished':
+
+    # call service publish_job with status='finished' and subdir name
+    restart_cmd = 'http://{0}/svc/publish_job?status={1}&id={2}'.format(dst_ip, 'finished', job_id)
+    print('restart_cmd: ', restart_cmd)
+
+    x = requests.get(restart_cmd)
+    print(x.text)
+
+    # remove the dmtcp files if there
+    for file1 in glob.glob(os.path.join('/home/ops/data/', str(job_id), '*')):
+      ### print('file1: ', file1)
+      if 'dmtcp_' in file1 and '.sh' in file1:
+        parsed_ckpt_files = parse_script(file1)
+
+        for ckpt_file in parsed_ckpt_files:
+          if os.path.exists(ckpt_file):
+            os.remove(ckpt_file)
+            print('removed {0}'.format(ckpt_file))
+
+        os.remove(file1)
+        print('dmtcp restart shell script: {} removed'.format(file1))
+
+      if 'ckpt_' in file1 and '.dmtcp' in file1:
+        os.remove(file1)
+        print('dmtcp file: {} removed'.format(file1))
+
+
+# end of publish()
+
+
+
+
+
+def hop2(src_ip, dst_ip, port):
+
+  print("in hop, from {0} to {1}".format(src_ip, dst_ip))
+  ### dmtcp.checkpoint()
+  checkpoint()
+  time.sleep(1)
+  ### print("checkpoint done.")
+
+  fname = checkpointFilename()
+  if fname != '':
+    print ('fname: ', fname)
+
+  if isResume():
+
+    # copy fname and dmtcp_restart_script.sh to ~/data mount if it is not there yet
+    # in the future we could use AWS s3 buckets
+    prefix = ''
+    if fname != '':
+      ckpt_basename = os.path.basename(fname)
+      prefix = fname.replace(ckpt_basename, '')
+      print('prefix: ', prefix)
+
+      if prefix != '':
+        if prefix != '/home/ops/data/':
+          shutil.copyfile(fname, os.path.join('/home/ops/data/', ckpt_basename))
+          print('copied {} to /home/ops/data/'.format(fname))
+          os.remove(fname)
+          print('removed {0}'.format(fname))
+
+        real_script = os.path.realpath('./dmtcp_restart_script.sh')
+        print('real_script: ', real_script)
+        shutil.copyfile(real_script, os.path.join('/home/ops/data/', 'dmtcp_restart_script.sh'))
+        print('copied {} to /home/ops/data/dmtcp_restart_script.sh'.format(real_script))
+        os.remove(real_script)
+        print('removed {0}'.format(real_script))
+
+        # call service hop2()
+        ### restart_cmd = 'curl "http://{0}/svc/hop2?port={1}&ckpt={2}" '.format(dst_ip, port, ckpt_basename)
+        restart_cmd = 'http://{0}/svc/hop2?port={1}&ckpt={2}'.format(dst_ip, port, ckpt_basename)
+        print('restart_cmd: ', restart_cmd)
+
+        """
+        args = shlex.split(restart_cmd)
+        print('args: ', args)
+        p = subprocess.Popen(args)
+        p.wait()
+        """
+
+        x = requests.get(restart_cmd)
+        print(x.text)
+
+    ### print("The process is resuming from a checkpoint.")
+    # after hop(), the process will restart on a new node
+    sys.exit(0)
+  else:
+    # restarting after hop() on a new node
+    ### print("The process is restarting from a previous checkpoint.")
+    pass
+  return
+
 
 
 def createSessionList():

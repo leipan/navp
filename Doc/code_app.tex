@@ -1,0 +1,26 @@
+\def\baselinestretch{1}
+%%\fbox{\small%
+\fbox{\footnotesize%
+\parbox{0.2in}{\tt
+\begin{tabbing}
+\hspace*{0.2ex}\=xxxxx\=xx\=xx\=xx\=xx\=\+\kill
+%
+(1)\>$\mathtt {request\ svc/get\_job\ to\ get\ job\_id/status\ }$\\
+(2)\>$\mathtt {if\ status == ``new":}$\\
+(3)\>$\mathtt {\ \ call\ main(job\_id)}$\\
+(4)\>$\mathtt{elseif\ status == ``ckpt":}$\\
+(5)\>$\mathtt {\ \ call\ dmtcp.restart(job\_id)}$\\
+\>$\mathtt {}$\\
+(6)\>$\mathtt {def\ main(job\_id):}$\\
+(7)\>$\mathtt {\ \ read\ VIIRS\ data}$\\
+(8)\>$\mathtt {\ \ read\ CrIS\ data}$\\
+(9)\>$\mathtt {\ \ call\ dmtcp.publish(job\_id,\ ``ckpt")}$\\
+(10)\>$\mathtt {\ \ compute\ CrIS\ LOS\ vector\ in\ ECEF}$\\
+(11)\>$\mathtt {\ \ compute\ VIIRS\ POS\ vector\ in\ ECEF}$\\
+(12)\>$\mathtt {\ \ call\ dmtcp.publish(job\_id,\ ``ckpt")}$\\
+(13)\>$\mathtt {\ \ match\ VIIRS\ to\ CrIS}$\\
+(14)\>$\mathtt {\ \ write\ product}$\\
+(15)\>$\mathtt {\ \ call\ dmtcp.publish(job\_id,\ ``finished")}$
+\end{tabbing}
+}}
+%\end{center}

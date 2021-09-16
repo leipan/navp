@@ -25,7 +25,9 @@ RUN yum -y update && yum -y --setopt=tsflags=nodocs install    \
       && pip3 install flask                     \
       && pip3 install requests                  \
       && pip3 install numpy                     \
-      && pip3 install pykdtree
+      && pip3 install pykdtree                  \
+      && pip3 install netCDF4                   \
+      && pip3 install h5py                      
 
 RUN set -ex \
     && useradd -ms /bin/bash leipan             \
