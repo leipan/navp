@@ -262,6 +262,7 @@ def publish(src_ip, dst_ip, port, status, job_id):
           print('removed {0}'.format(real_script))
 
         parsed_ckpt_files = parse_script(os.path.join(subdir1, 'dmtcp_restart_script.sh'))
+        print('parsed_ckpt_files parsed: ', parsed_ckpt_files)
 
         for ckpt_file in parsed_ckpt_files:
           ckpt_file_basename = os.path.basename(ckpt_file)
@@ -297,7 +298,9 @@ def publish(src_ip, dst_ip, port, status, job_id):
         parsed_ckpt_files = parse_script(file1)
 
         for ckpt_file in parsed_ckpt_files:
-          if os.path.exists(ckpt_file):
+          print('ckpt_file: ', ckpt_file)
+          ### if os.path.exists(ckpt_file):
+          if os.path.isfile(ckpt_file):
             os.remove(ckpt_file)
             print('removed {0}'.format(ckpt_file))
 
