@@ -517,10 +517,13 @@ def get_job():
   ### print('jsonArray[0]: ', jsonArray[0])
 
   # check status with job_id
-  if job_id != '':
-    dict1 = {job_id:jsonArray[0][job_id]}
-    print(jsonArray[0][job_id])
-  else:
+  if job_id != '': # request provided a job_id
+    try:
+      dict1 = {job_id:jsonArray[0][job_id]}
+      print(jsonArray[0][job_id])
+    except KeyError:
+      dict1 = {'mesg':'job with id={} does not exist yet'.format(job_id)}
+  else: # request with no job_id, return first job that is 'ckpt' or 'new'
     for key, value in reversed(jsonArray[0].items()):
       if value == 'ckpt' or value == 'new':
         ### print('id: {0}, value: {1}'.format(id, value))
