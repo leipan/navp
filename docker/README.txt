@@ -16,7 +16,7 @@
 
 . to run dmtcp docker container
   ### docker run --cap-add=SYS_PTRACE --security-opt seccomp=unconfined -ti dmtcp/dmtcp
-  docker run --security-opt seccomp=unconfined --network=host -v /home/leipan/projects/aria_esi/wvcc/pge/data/collocation_output_1granule/test:/home/ops/data:rw -ti dmtcp/dmtcp /bin/bash
+  ### docker run --security-opt seccomp=unconfined --network=host -v /home/leipan/projects/aria_esi/wvcc/pge/data/collocation_output_1granule/test:/home/ops/data:rw -ti dmtcp/dmtcp /bin/bash
 
   docker run --security-opt seccomp=unconfined --network=host -v /home/leipan/projects/aria_esi/wvcc/pge/data/collocation_output_1granule/test2:/home/ops/data:rw -ti leipan/dmtcp:latest /bin/bash
 
@@ -26,7 +26,9 @@
 
 . will use two navp bridging services:
   . one deployed to 127.0.0.1:8080 running inside a container
+  . http://higgs.jpl.nasa.gov:8080/
   . one deployed to 127.0.0.1:28080 running inside another container
+  . http://higgs.jpl.nasa.gov:28080/
   . their /home/ops/data dirs are bound to the same dir on the host
 
 . to get into a running container (to run, e.g., dmtcp_command --checkpoint)
