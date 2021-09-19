@@ -25,6 +25,7 @@
   (place the 4 .nc files under $host_dir)
 
 . will use two navp bridging services:
+  . make sure to change PORT and make them consistent in both host.cfg and settings.cfg under services/svc
   . one deployed to 127.0.0.1:8080 running inside a container
   . http://higgs.jpl.nasa.gov:8080/
   . one deployed to 127.0.0.1:28080 running inside another container
