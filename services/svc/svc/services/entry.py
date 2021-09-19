@@ -516,6 +516,8 @@ def get_job():
   ### print('type(jsonArray): ', type(jsonArray))
   ### print('jsonArray[0]: ', jsonArray[0])
 
+  dict1 = {}
+
   # check status with job_id
   if job_id != '': # request provided a job_id
     try:
