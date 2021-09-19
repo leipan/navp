@@ -321,29 +321,32 @@ if __name__ == '__main__':
     print('cmd: ', cmd)
 
     x = requests.get(cmd)
-    print(x.text)
+    ### print(x.text)
     y = json.loads(x.text)
+    ### print('y: ', y)
     ### status = y[job_id]
 
-    dict_pairs = y.items()
-    pairs_iterator = iter(dict_pairs)
-    first_pair = next(pairs_iterator)
-    print(type(first_pair))
+    # if the dict returned is not empty
+    if y:
+      dict_pairs = y.items()
+      pairs_iterator = iter(dict_pairs)
+      first_pair = next(pairs_iterator)
+      print(type(first_pair))
 
-    job_id = first_pair[0]
-    print('job_id: ', job_id)
-    status = first_pair[1]
-    print('status: ', status)
+      job_id = first_pair[0]
+      print('job_id: ', job_id)
+      status = first_pair[1]
+      print('status: ', status)
 
-    if status == 'new':
-      # run the app from beginning
-      main(job_id)
-    elif status == 'ckpt':
-      # get restart script downloaded and
-      # restart the app from ckpt
-      dmtcp.restart(src_ip, dst_ip, str(port+1), job_id)
-
-
+      if status == 'new':
+        # run the app from beginning
+        main(job_id)
+      elif status == 'ckpt':
+        # get restart script downloaded and
+        # restart the app from ckpt
+        dmtcp.restart(src_ip, dst_ip, str(port+1), job_id)
+    else:
+      print('no job left on server')
 
 
 
