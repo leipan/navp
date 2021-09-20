@@ -76,6 +76,13 @@ if True:
     ### dataDir4='./'
     dataDir4='/home/ops/data/'
     
+    """
+    print("before hop() elapsed time: --- %.2f seconds --- " % (float(time.time() - start_t)))
+    dmtcp.hop2(src_ip, dst_ip, port)
+
+    start_t2 = time.time()
+    """
+
     ### for iloop in range(0,239,10):
     ### for iloop in range(0,9,10):
     if True:
@@ -128,7 +135,15 @@ if True:
         print ('start_time: ', start_time)
         print ('end_time: ', end_time)
 
+        """
+        print('src_ip: ', src_ip)
+        print('dst_ip: ', dst_ip)
+        """
+
+        print("before 1st hop() elapsed time: --- %.2f seconds --- " % (float(time.time() - start_t)))
         dmtcp.hop2(src_ip, dst_ip, port)
+
+        start_t2 = time.time()
 
         # CrIS and VIIRS use epoch time since 1/1/1993 (1993TAI),
         # and unix epoch time is since 1/1/1970
@@ -207,7 +222,12 @@ if True:
 #remove the sdrqa, but adding time requirement (less than 600S difference)
         dy, dx = geo_QY.match_cris_viirs_QY(cris_los, cris_pos, viirs_pos, cris_time, viirs_time)
 
+        ### print("before 2nd hop() elapsed time: --- %.2f seconds --- " % (float(time.time() - start_t)))
+
+        print("------ between two hop() elapsed time --- %.2f seconds --- " % (float(time.time() - start_t2)))
         dmtcp.hop2(dst_ip, src_ip, port+1)
+
+        start_t3 = time.time()
 
         ### print ('dy: ', dy)
         print ('dy.shape: ', dy.shape)
@@ -304,6 +324,7 @@ with open(outDir+output_filename+'/'+output_filename+'.met.json', 'w') as metf:
 
 print("started at: ", start_t)
 print("now at: ", float(time.time()))
+print("------ after 2nd hop() elapsed time --- %.2f seconds --- " % (float(time.time() - start_t3)))
 print("done in --- %.2f seconds --- " % (float(time.time() - start_t)))
 
 # collocation is done
