@@ -596,8 +596,11 @@ def hop2():
 
     args = shlex.split(command_line)
     print(args)
+    restartStart = float(time.time())
     p = subprocess.Popen(args)
     p.wait()
+    restartEnd = float(time.time())
+    print ('*** restart elapsed time: ', restartEnd - restartStart)
 
     dict1 = {'mesg':'dmtcp_restart_script.sh called'}
   else:
