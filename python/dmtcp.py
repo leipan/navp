@@ -320,9 +320,15 @@ def publish(src_ip, dst_ip, port, status, job_id):
 
 def hop2(src_ip, dst_ip, port):
 
+  executionStartTime = int(time.time())
+
   print("in hop, from {0} to {1}".format(src_ip, dst_ip))
   ### dmtcp.checkpoint()
+
+  executionStartTime2 = int(time.time())
   checkpoint()
+  executionEndTime2 = float(time.time())
+
   time.sleep(1)
   ### print("checkpoint done.")
 
@@ -331,6 +337,8 @@ def hop2(src_ip, dst_ip, port):
     print ('fname: ', fname)
 
   if isResume():
+
+    print ('****** checkpoint() (in hop2()) elapsed time: ', executionEndTime2 - executionStartTime2)
 
     # copy fname and dmtcp_restart_script.sh to ~/data mount if it is not there yet
     # in the future we could use AWS s3 buckets
@@ -371,6 +379,10 @@ def hop2(src_ip, dst_ip, port):
 
     ### print("The process is resuming from a checkpoint.")
     # after hop(), the process will restart on a new node
+
+    executionEndTime = float(time.time())
+    print ('****** hop() elapsed time: ', executionEndTime - executionStartTime)
+
     sys.exit(0)
   else:
     # restarting after hop() on a new node
