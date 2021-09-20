@@ -548,7 +548,7 @@ def get_job():
 @crossdomain(origin='*')
 def hop2():
   """Run hop2"""
-  logger.info('****** hop2() starts.')
+  logger.info('****** svc/hop2 starts.')
   executionStartTime = int(time.time())
 
   # assume script is under ~/data
@@ -607,8 +607,8 @@ def hop2():
     dict1 = {'error':'dmtcp_restart_script.sh is pointing at the wrong dmtcp memory image'}
 
   executionEndTime = float(time.time())
-  print ('****** hop2() elapsed time: ', executionEndTime - executionStartTime)
-  logger.info('****** hop2() elapsed time: %s' % str(executionEndTime - executionStartTime))
+  print ('****** svc/hop2 elapsed time: ', executionEndTime - executionStartTime)
+  logger.info('****** svc/hop2 elapsed time: %s' % str(executionEndTime - executionStartTime))
 
   return jsonify(dict1)
 
