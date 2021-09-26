@@ -600,7 +600,7 @@ def hop2():
     p = subprocess.Popen(args)
     p.wait()
     restartEnd = float(time.time())
-    print ('*** restart elapsed time: ', restartEnd - restartStart)
+    print ('*** restart elapsed time (includes restart overhead plus all the cost after restart): ', restartEnd - restartStart)
 
     dict1 = {'mesg':'dmtcp_restart_script.sh called'}
   else:
