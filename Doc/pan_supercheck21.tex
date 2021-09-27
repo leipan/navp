@@ -43,6 +43,10 @@ We apply checkpointing to science data systems. With program state migration fac
 C/R, DMTCP, NavP, FTC, SDS
 \end{IEEEkeywords}
 \vspace{-2.2mm}
+
+\section*{Acknowledgement}
+The research was carried out at the Jet Propulsion Laboratory, California Institute of Technology, under a contract with the National Aeronautics and Space Administration (80NM0018D0004).
+
 \section{Introduction}
 \label{sec:introduction}
 In the currently available science data systems (SDS), there are two problems that are not properly addressed:~\textbf{(1)} Long running tasks are not readily breakable into smaller ones to leverage the Amazon EC2 Spot market, which provides steep discounts; and~\textbf{(2)} Only embarrassingly parallel algorithms (e.g., MapReduce) are easily programmable. Furthermore, scientist programmers cannot deploy their apps without the help from SDS experts.
