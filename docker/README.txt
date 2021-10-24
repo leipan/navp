@@ -9,10 +9,12 @@
   cd navp
   ### docker build --rm -t dmtcp/dmtcp:latest -f docker/matchup_Dockerfile .
   docker build --rm -t leipan/dmtcp:latest -f docker/matchup_Dockerfile .
+  docker build --rm -t leipan/dmtcp:debug -f docker/matchup_Dockerfile .
 
 . to push the image to dockerhub
   docker login
   docker push leipan/dmtcp:latest
+  docker push leipan/dmtcp:debug
 
 . to run dmtcp docker container
   ### docker run --cap-add=SYS_PTRACE --security-opt seccomp=unconfined -ti dmtcp/dmtcp
