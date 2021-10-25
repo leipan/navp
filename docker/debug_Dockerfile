@@ -1,0 +1,104 @@
+# Dockerfile to build DMTCP image
+### FROM centos:7
+FROM hysds/pge-base
+
+MAINTAINER Lei Pan <leipan@jpl.nasa.gov>
+LABEL description="WVCC matchup container with DMTCP installed together" \
+      Version=1.1.0 \
+      Vendor="JPL"
+
+USER root
+RUN source /opt/conda/bin/activate root \
+ && conda config --add channels conda-forge \
+ && conda install numpy \
+ && conda install netCDF4 \
+ && conda install pykdtree \
+ && conda install h5py \
+ && conda install basemap
+
+RUN yum -y update && yum -y --setopt=tsflags=nodocs install    \
+      strace                                    \
+      gcc-c++                                   \
+      build-essential                           \
+      git-core                                  \
+      make                                      \
+      vim                                       \
+      gdb                                       \
+      wget                                      \
+      m4                                        \
+      centos-release-scl                        \
+      python3-pip python3-dev                   \
+      && yum clean all                          \
+      && cd /usr/local/bin                      \
+      && ln -s /usr/bin/python3 python          \
+      && pip3 install --upgrade pip             \
+      && pip3 install flask                     \
+      && pip3 install requests                  \
+      && pip3 install numpy                     \
+      && pip3 install pykdtree                  \
+      && pip3 install netCDF4                   \
+      && pip3 install h5py                      
+
+RUN set -ex \
+    && echo "export PATH=$PATH:/home/ops/local/dmtcp_installation/bin" >> /home/ops/.bashrc \
+    && echo "export DMTCP_ROOT=/home/ops/local/dmtcp_installation/" >> /home/ops/.bashrc \
+    && echo "alias ll='ls -alF'" >> /home/ops/.bashrc \
+    && echo "alias rm='rm -i'"   >> /home/ops/.bashrc \
+    && echo "alias mv='mv -i'"   >> /home/ops/.bashrc \
+    && echo "alias cp='cp -i'"   >> /home/ops/.bashrc \
+    && echo "alias h='history'"  >> /home/ops/.bashrc
+
+USER ops
+RUN mkdir -p /home/ops/dmtcp
+RUN mkdir -p /home/ops/local/dmtcp_installation
+RUN mkdir -p /home/ops/navp
+
+WORKDIR /home/ops
+USER root
+RUN yum -y install devtoolset-7 ; scl enable devtoolset-7 bash
+SHELL [ "/usr/bin/scl", "enable", "devtoolset-7"]
+
+# install bison for glibc 2.28
+RUN wget https://ftp.gnu.org/gnu/bison/bison-3.2.tar.gz
+RUN tar xf bison-3.2.tar.gz
+RUN mkdir $HOME/install-bison
+RUN cd bison-3.2; ./configure --prefix=$HOME/install-bison; make; make install
+
+# install make for glibc 2.28
+RUN wget https://ftp.gnu.org/gnu/make/make-4.3.tar.gz
+RUN tar xzf make-4.3.tar.gz
+RUN mkdir $HOME/install-make; cd make-4.3; ./configure --prefix=$HOME/install-make; make; make install
+RUN export PATH=$HOME/install-make/bin:$HOME/install-bison/bin:$PATH
+
+# download glibc 2.28
+RUN wget http://ftp.gnu.org/gnu/glibc/glibc-2.28.tar.gz
+RUN tar -xzf glibc-2.28.tar.gz
+
+# RUN export PATH=$HOME/install/bin:$PATH
+# RUN echo $PATH
+# RUN ls $HOME/install-bison/bin
+RUN yum -y install gettext texinfo
+RUN export PATH=$HOME/install-make/bin:$HOME/install-bison/bin:$PATH; cd glibc-2.28; mkdir build; cd build; ../configure CC=/opt/rh/devtoolset-7/root/bin/gcc CXX=/opt/rh/devtoolset-7/root/bin/g++ --with-headers=/usr/include --with-binutils=/usr/bin --prefix=/usr; make; make install; exit 0
+
+USER ops
+WORKDIR /home/ops/dmtcp
+
+RUN git clone https://github.com/dmtcp/dmtcp.git /home/ops/dmtcp && \
+      git checkout 65ef6e23ecd5234616688471d0f4bb9b884261c4 && \
+      git log -n 1
+RUN git clone https://github.com/leipan/navp.git /home/ops/navp
+
+RUN ./configure --enable-debug CC=/opt/rh/devtoolset-7/root/bin/gcc CXX=/opt/rh/devtoolset-7/root/bin/g++ --prefix=/home/ops/local/dmtcp_installation && make -j clean && make -j8 && make install
+
+# WVCC matchup pge
+USER ops
+COPY . /home/ops/matchup_pge
+RUN set -ex \
+ && cd /tmp \
+ && rm -rf CrIS_VIIRS_collocation-master \
+ && git clone https://github.com/leipan/CrIS_VIIRS_collocation-master.git \
+ && mv CrIS_VIIRS_collocation-master /home/ops/
+
+### ENTRYPOINT ["/bin/bash"]
+WORKDIR /home/ops
+CMD ["/bin/bash", "--login"]
