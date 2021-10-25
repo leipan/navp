@@ -15,7 +15,7 @@ from utils import get_host_port
 
 # note:
 # this script is run from navp/python/
-# and the input/output are placed in /home/ops/data/ in the docker container
+# and the input/output are placed in /home/ops/matchup_pge/ in the docker container
 
 def get_ips():
 
@@ -57,9 +57,9 @@ port = 7788
 
 if True:
     # this script is run from navp/python/
-    # and the input/output are placed in /home/ops/data/ in the docker container
-    dataDir2='/home/ops/data/'
-    dataDir4='/home/ops/data/'
+    # and the input/output are placed in /home/ops/matchup_pge/ in the docker container
+    dataDir2='/home/ops/matchup_pge/'
+    dataDir4='/home/ops/matchup_pge/'
     
     # first place, before anything
     print("before hop() elapsed time: --- %.2f seconds --- " % (float(time.time() - start_t)))
