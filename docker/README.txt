@@ -9,7 +9,7 @@
   cd navp
   ### docker build --rm -t dmtcp/dmtcp:latest -f docker/matchup_Dockerfile .
   docker build --rm -t leipan/dmtcp:latest -f docker/matchup_Dockerfile .
-  docker build --rm -t leipan/dmtcp:debug -f docker/matchup_Dockerfile .
+  docker build --rm -t leipan/dmtcp:debug -f docker/debug_Dockerfile .
 
 . to push the image to dockerhub
   docker login
@@ -23,6 +23,8 @@
   docker run --security-opt seccomp=unconfined --network=host -v /home/leipan/projects/aria_esi/wvcc/pge/data/collocation_output_1granule/test:/home/ops/data:rw  -ti leipan/dmtcp:latest /bin/bash
 
   docker run --security-opt seccomp=unconfined --network=host -v /home/leipan/projects/aria_esi/wvcc/pge/data/collocation_output_1granule/test2:/home/ops/data:rw -ti leipan/dmtcp:latest /bin/bash
+
+  docker run --security-opt seccomp=unconfined --network=host -ti leipan/dmtcp:debug /bin/bash
 
   (-v $host_dir:$guest_dir maps the host disk volume into the container)
 
