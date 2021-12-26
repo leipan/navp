@@ -13,5 +13,6 @@ try:
   for item in shm.buf:
     print(item)
 
+  shm.close()
 except FileNotFoundError:
   print('Error: shared memory {} does not exist'.format(name1))
