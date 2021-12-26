@@ -7,3 +7,4 @@ if True:
   print('shm._name: ', shm._name)
 
   input("Press Enter to continue")
+  shm.unlink()  # free memory
