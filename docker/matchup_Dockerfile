@@ -14,7 +14,8 @@ RUN source /opt/conda/bin/activate root \
  && conda install netCDF4 \
  && conda install pykdtree \
  && conda install h5py \
- && conda install basemap
+ && conda install basemap \
+ && conda install python=3.8 
 
 RUN yum -y update && yum -y --setopt=tsflags=nodocs install    \
       strace                                    \
@@ -40,7 +41,8 @@ RUN yum -y update && yum -y --setopt=tsflags=nodocs install    \
       && pip3 install h5py                      
 
 RUN set -ex \
-    && echo "export PATH=$PATH:/home/ops/local/dmtcp_installation/bin" >> /home/ops/.bashrc \
+    && echo "export PYTHONPATH=$PYTHONPATH:/opt/conda/lib/python3.8/site-packages" >> /home/ops/.bashrc \
+    && echo "export PATH=/opt/conda/bin:$PATH:/home/ops/local/dmtcp_installation/bin" >> /home/ops/.bashrc \
     && echo "export DMTCP_ROOT=/home/ops/local/dmtcp_installation/" >> /home/ops/.bashrc \
     && echo "alias ll='ls -alF'" >> /home/ops/.bashrc \
     && echo "alias rm='rm -i'"   >> /home/ops/.bashrc \
