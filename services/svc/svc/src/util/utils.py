@@ -69,6 +69,34 @@ def usage_of_dir(dirname):
   return (100. - st.f_bavail*100./st.f_blocks)
 
 
+
+def get_ips():
+  ### ip1 = "weather2.jpl.nasa.gov"
+  ### ip2 = "higgs.jpl.nasa.gov"
+
+  protocol, hostname, port = get_host_port('/home/ops/navp/services/svc/host.cfg')
+  print('port: ', port)
+
+  ip2 = "127.0.0.1:28080"
+  ip1 = "127.0.0.1:8080"
+
+  if port in ip1:
+    src_ip = ip1
+    dst_ip = ip2
+  else:
+    src_ip = ip2
+    dst_ip = ip1
+
+  ### print('src_ip: ', src_ip)
+  ### print('dst_ip: ', dst_ip)
+
+  return src_ip, dst_ip
+
+  
+def swap_ips(src_ip, dst_ip):
+  return dst_ip, src_ip
+
+
 def age_of_file(filepath):
 
   x=os.stat(filepath)
