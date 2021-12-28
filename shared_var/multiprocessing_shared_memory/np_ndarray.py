@@ -3,7 +3,8 @@ from multiprocessing import shared_memory, resource_tracker
 
 shm_name = 'test_shm_np'
 
-data = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+### data = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+data = range(0, 1000000)
 d_shape = (len(data),)
 d_type = np.int64
 d_size = np.dtype(d_type).itemsize * np.prod(d_shape)
