@@ -24,7 +24,7 @@
 
   docker run --security-opt seccomp=unconfined --network=host -v /home/leipan/projects/aria_esi/wvcc/pge/data/collocation_output_1granule/test2:/home/ops/data:rw -ti leipan/dmtcp:latest /bin/bash
 
-  docker run --security-opt seccomp=unconfined --network=host -v /home/leipan/output_data:/home/ops/data:rw -ti leipan/dmtcp:debug /bin/bash
+  ### docker run --security-opt seccomp=unconfined --network=host -v /home/leipan/output_data:/home/ops/data:rw -ti leipan/dmtcp:debug /bin/bash
 
   (-v $host_dir:$guest_dir maps the host disk volume into the container)
 
