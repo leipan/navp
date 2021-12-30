@@ -349,21 +349,34 @@ def hop2(src_ip, dst_ip, port):
       print('prefix: ', prefix)
 
       if prefix != '':
+        """
         if prefix != '/home/ops/data/':
           shutil.copyfile(fname, os.path.join('/home/ops/data/', ckpt_basename))
           print('copied {} to /home/ops/data/'.format(fname))
           os.remove(fname)
           print('removed {0}'.format(fname))
+        """
 
         real_script = os.path.realpath('./dmtcp_restart_script.sh')
         print('real_script: ', real_script)
         shutil.copyfile(real_script, os.path.join('/home/ops/data/', 'dmtcp_restart_script.sh'))
         print('copied {} to /home/ops/data/dmtcp_restart_script.sh'.format(real_script))
+        """
         os.remove(real_script)
         print('removed {0}'.format(real_script))
+        """
+
+        if prefix != '/home/ops/data/':
+          parsed_ckpt_files = parse_script(os.path.join('/home/ops/data/', 'dmtcp_restart_script.sh'))
+          for fname in parsed_ckpt_files:
+            ckpt_basename = os.path.basename(fname)
+            shutil.copyfile(fname, os.path.join('/home/ops/data/', ckpt_basename))
+            print('copied {} to /home/ops/data/'.format(fname))
 
         # call service hop2()
         ### restart_cmd = 'curl "http://{0}/svc/hop2?port={1}&ckpt={2}" '.format(dst_ip, port, ckpt_basename)
+        ### restart_cmd = 'http://{0}/svc/hop2?port={1}&ckpt={2}'.format(dst_ip, port, ckpt_basename)
+        ckpt_basename = os.path.basename(parsed_ckpt_files[0])
         restart_cmd = 'http://{0}/svc/hop2?port={1}&ckpt={2}'.format(dst_ip, port, ckpt_basename)
         print('restart_cmd: ', restart_cmd)
 
