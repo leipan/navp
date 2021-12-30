@@ -569,22 +569,28 @@ def hop2():
   # first copy dmtcp_restart_script.sh and the ckpt file from ./data to local (./)
   script_path = os.path.join('/home/ops/data', script)
   print('script_path: ', script_path)
-  parsed_ckpt_file = parse_script(script_path)
-  parsed_ckpt_file_basename = os.path.basename(parsed_ckpt_file)
+  parsed_ckpt_files = parse_script(script_path)
+  parsed_ckpt_file_basename = os.path.basename(parsed_ckpt_files[0])
   # prefix is where the ckpt memory image is and is where the restart script is pointing at
-  prefix = parsed_ckpt_file.replace(parsed_ckpt_file_basename, '')
+  prefix = parsed_ckpt_files[0].replace(parsed_ckpt_file_basename, '')
   print('prefix: ', prefix)
 
   print('ckpt_file: ', ckpt_file)
   logger.info('ckpt_file: {0}'.format(ckpt_file))
-  print('parsed_ckpt_file: ', parsed_ckpt_file)
-  logger.info('parsed_ckpt_file: {0}'.format(parsed_ckpt_file))
+  print('parsed_ckpt_files: ', parsed_ckpt_files)
+  logger.info('parsed_ckpt_files: {0}'.format(parsed_ckpt_files))
+  print('parsed_ckpt_file_basename: ', parsed_ckpt_file_basename)
+  logger.info('parsed_ckpt_file_basename: {0}'.format(parsed_ckpt_file_basename))
 
   if parsed_ckpt_file_basename == ckpt_file:
 
     # copy dmtcp files from data/ to local dirs
     shutil.copyfile(script_path, './dmtcp_restart_script.sh')
-    shutil.copyfile(os.path.join('/home/ops/data', parsed_ckpt_file_basename), os.path.join(prefix, parsed_ckpt_file_basename))
+    print('copied {} to ./dmtcp_restart_script.sh'.format(script_path))
+    for f1 in parsed_ckpt_files:
+      f1_basename = os.path.basename(f1)
+      shutil.copyfile(os.path.join('/home/ops/data', f1_basename), os.path.join(prefix, f1_basename))
+      print('copied {0} from /home/ops/data to {1}'.format(f1_basename, prefix))
 
     # then run dmtcp_restart_script.sh on dst_ip
     ### command_line = '/home/leipan/projects/dmtcp/git/navp/services/svc/dmtcp_restart_script.sh --coord-port ' + port
