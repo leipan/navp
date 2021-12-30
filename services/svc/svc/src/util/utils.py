@@ -26,8 +26,11 @@ def parse_script(script):
 
   file1.close()
 
-  value1 = value[0].replace('"', '')
-  value1 = value1.strip()
+  print('value[0]: ', value[0])
+  ### value1 = value[0].replace('"', '')
+  value1 = value[0].strip() # get rid of leading and trailing whitespaces
+  value1 = value1.replace('"', '')
+  value1 = value1.split()
   return value1
 
 
